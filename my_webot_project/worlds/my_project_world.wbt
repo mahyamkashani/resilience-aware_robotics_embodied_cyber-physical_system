@@ -3,22 +3,53 @@
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/tables/protos/Table.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/clearpath/pr2/protos/Pr2.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/drinks/protos/WaterBottle.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.08083935218605663 0.7734588658192318 0.6286703285695662 0.32952219814557815
-  position -7.478351544522239 -2.227683283807992 2.78816368922024
+  orientation -0.0676702869230689 -0.07251826553814886 0.995068758142415 4.776634449961282
+  position -6.012879157195768 17.928826424698222 3.25092016700499
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
 }
 RectangleArena {
-  floorSize 10 1
+  translation -1.92 0 0
+  floorSize 20 12
+  floorAppearance Parquetry {
+    type "light strip"
+  }
 }
-E-puck {
-  translation -2.77 0 0
-  controller "epuck_controller"
+Pr2 {
+  translation -4.91701 0.258347 -0.017623
+  controller "youbot_controller"
+  supervisor TRUE
+}
+DEF box1 WoodenBox {
+  translation -8.57 3.55 0.3
+  name "box1"
+}
+DEF table1 Table {
+  translation -0.26 0 0
+  rotation -1 0 0 0
+  size 1 1.5 0.6
+}
+DEF table2 Table {
+  translation -7.97 0 0
+  rotation -1 0 0 0
+  name "table(1)"
+  size 1 1.5 0.6
+}
+DEF water_bottle WaterBottle {
+  translation -0.45 0.649854 0.63
+}
+DEF box2 WoodenBox {
+  translation -6.12 -4.64 0.3
+  name "box2"
 }

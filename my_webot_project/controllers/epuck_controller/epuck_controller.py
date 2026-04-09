@@ -12,11 +12,20 @@ from examples import test_example
 robot = Robot()
 timestep = int(robot.getBasicTimeStep())
 
+
+'''
 # Initialise devices for epuck-robot
 left_wheel = Wheel(robot, "left wheel motor")
 right_wheel = Wheel(robot, "right wheel motor")
 camera = Camera(robot, 'camera', timestep)
 distance_sensor = DistanceSensor(robot, "ps0", timestep)
+'''
+
+print("Devices in this robot:")
+
+for i in range(robot.getNumberOfDevices()):
+    device = robot.getDeviceByIndex(i)
+    print("-", device.getName(), "| type:", device.getNodeType())
 
 # ROS init and Node instance
 rclpy.init()
@@ -53,11 +62,12 @@ while robot.step(timestep) != -1:
     # Update S
     resilience_manager.update_compromised_set(ids_output)
 
+    # Check resilience
+    resilient = resilience_manager.check_resilience()
+
     # Log transitions
     resilience_manager.log_state_changes()
 
-    # Check resilience
-    resilient = resilience_manager.check_resilience()
 
     # Apply policy
     velocity = resilience_manager.get_wheel_speed()

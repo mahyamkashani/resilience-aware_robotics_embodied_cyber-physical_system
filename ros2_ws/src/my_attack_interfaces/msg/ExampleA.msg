@@ -1,0 +1,12 @@
+bool C1
+bool C2
+bool C3
+bool C4
+bool C5
+bool C6
+bool C7
+bool C8
+bool A1
+bool A2
+bool A3
+bool A4

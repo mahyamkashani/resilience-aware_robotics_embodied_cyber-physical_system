@@ -7,6 +7,7 @@ class AttackNode(Node):
         super().__init__('attack_publisher')
         self.attack_publisher = self.create_publisher(AttackState, '/attack_state', 10)
 
+    '''
     def trigger_attack(self):
         msg = AttackState()
         msg.camera = False
@@ -16,6 +17,7 @@ class AttackNode(Node):
 
         self.attack_publisher.publish(msg)
         self.get_logger("Attack started")
+        
 
     def stop_attack(self):
         msg = AttackState()
@@ -26,7 +28,19 @@ class AttackNode(Node):
 
         self.attack_publisher.publish(msg)
         self.get_logger().info("Attack stopped")
+        '''
+    def trigger_attack(self, devices):
+        msg = AttackState()
+        msg.compromised_devices = devices
+        self.attack_publisher.publish(msg)
+        self.get_logger("Attack started")
         
+
+    def stop_attack(self):
+        msg = AttackState()
+        msg.compromised_devices = []
+        self.attack_publisher.publish(msg)
+        self.get_logger().info("Attack stopped")
 
 def main():
     rclpy.init()
