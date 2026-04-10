@@ -7,7 +7,7 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/tables/protos/Table.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/clearpath/pr2/protos/Pr2.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/drinks/protos/WaterBottle.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/drinks/protos/Can.proto"
 
 WorldInfo {
 }
@@ -28,7 +28,7 @@ RectangleArena {
 }
 Pr2 {
   translation -4.91701 0.258347 -0.017623
-  controller "youbot_controller"
+  controller "pr2_controller"
   supervisor TRUE
 }
 DEF box1 WoodenBox {
@@ -46,8 +46,8 @@ DEF table2 Table {
   name "table(1)"
   size 1 1.5 0.6
 }
-DEF water_bottle WaterBottle {
-  translation -0.45 0.649854 0.63
+DEF water_bottle Can {
+  translation -0.45 0.64986 0.63
 }
 DEF box2 WoodenBox {
   translation -6.12 -4.64 0.3

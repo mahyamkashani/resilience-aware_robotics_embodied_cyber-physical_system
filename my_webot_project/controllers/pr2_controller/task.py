@@ -72,8 +72,8 @@ def pickup_object(supervisor, arm, object_name, timestep, resilience_check=None,
     goal = [-1.38701,0.258347] # Position to pikc up water bottle @ table1
     result = move(supervisor, goal, timestep, resilience_check, resilience_manager, goal_node=None, attack_executor=attack_executor)
 
-    # lower arm towards object
-    result = pr2.set_arm_position(supervisor, arm, 0.0, 0.0, 0.0, 0.0, 0.0, timestep)
+    # lower arm towards object (positive shoulder_lift = arm goes down)
+    result = pr2.set_arm_position(supervisor, arm, 0.0, 0.1, 0.0, 0.0, 0.0, timestep)
 
     # Close gripper
     result = pr2.set_gripper(supervisor, arm, open=False, torque_when_gripping=10.0, timestep=timestep)
@@ -98,15 +98,18 @@ def navigagte_and_pickup_object(supervisor, waypoints, goal_name, arm, object_na
     if result == "HALTED":
         return "HALTED"
 
-    # lower arm towards drop point
-    result = pr2.set_arm_position(supervisor, arm, 0.0, 0.0, 0.0, -0.05, 0.0, timestep)
+    # Lower arm to drop position (same depth as pickup)
+    result = pr2.set_arm_position(supervisor, arm, 0.0, 0.1, 0.0, 0.0, 0.0, timestep)
 
-    # Open gripper
+    # Open gripper — bottle fills the full opening so it won't widen further
     result = pr2.set_gripper(supervisor, arm, open=True, torque_when_gripping=0.0, timestep=timestep)
-    
-    # Bring arm up
+
+    # Raise arm upward: bottle slides down onto table while gripper lifts clear
     result = pr2.set_arm_position(supervisor, arm, 0.0, 0.0, 0.0, -0.5, 0.0, timestep)
-    
+
+    # Move back away from table
+    result = pr2.robot_go_forward(supervisor, -0.5, timestep)
+
     return "DONE"
 
 
