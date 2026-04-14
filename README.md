@@ -39,7 +39,7 @@ ros2 topic pub --once /attack_state my_attack_interfaces/msg/AttackState \
 |---|---|
 | `left_wheels`, `right_wheels` | `STOP`, `OVERSPEED`, `UNDERSPEED`, `BACKWARD` |
 | `left_arm`, `right_arm` | `STOP`, `OVERSPEED`, `UNDERSPEED`, `BACKWARD` |
-| `left_gripper`, `right_gripper` | `STOP`, `OVERSPEED`, `UNDERSPEED`, `BACKWARD` |
+| `left_gripper`, `right_gripper` | `STOP`, `OVERSPEED`, `UNDERSPEED`, `BACKWARD`, `GRIP_WEAK`, `GRIP_STRONG` |
 | `torso`, `head` | `STOP`, `OVERSPEED`, `UNDERSPEED`, `BACKWARD` |
 
 To clear all attacks:
