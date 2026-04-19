@@ -27,17 +27,17 @@ navigate = {
         ("torso", "AvoidCollision"): 0,
         ("head", "AvoidCollision"): 0,
     },
-    "kappa": {
-        "left_wheels": 0.5,
-        "right_wheels": 0.5,
-        "left_arm": 0.5,
-        "left_gripper": 0.5,
-        "right_arm": 0.5,
-        "right_gripper": 0.5,
-        "torso": 0.5,
-        "head": 0.5,
-
-    },
+    # "kappa": {
+    #     "left_wheels": 0.5,
+    #     "right_wheels": 0.5,
+    #     "left_arm": 0.5,
+    #     "left_gripper": 0.5,
+    #     "right_arm": 0.5,
+    #     "right_gripper": 0.5,
+    #     "torso": 0.5,
+    #     "head": 0.5,
+    #
+    # },
     "waypoints": {
         "box1": None,
         "box2": None,
@@ -72,16 +72,16 @@ pickup_object = {
         ("torso", "GraspStability"): 0,
         ("head", "GraspStability"): 0,
     },
-    "kappa": {
-        "left_wheels": 0.5,
-        "right_wheels": 0.5,
-        "left_arm": 0.5,
-        "left_gripper": 0.5,
-        "right_arm": 0.5,
-        "right_gripper": 0.5,
-        "torso": 0.5,
-        "head": 0.5,
-    },
+    # "kappa": {
+    #     "left_wheels": 0.5,
+    #     "right_wheels": 0.5,
+    #     "left_arm": 0.5,
+    #     "left_gripper": 0.5,
+    #     "right_arm": 0.5,
+    #     "right_gripper": 0.5,
+    #     "torso": 0.5,
+    #     "head": 0.5,
+    # },
     "waypoints": {
         "apple": None,
         "water bottle": None

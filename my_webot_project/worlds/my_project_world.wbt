@@ -12,8 +12,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.17990755789523993 -0.146971934913509 0.972642031252994 4.484463914450693
-  position -1.9762414958671228 17.370831580568932 6.7392951413858375
+  orientation -0.16811156484346812 -0.1770287654518213 0.9697418821359036 4.733363323028776
+  position -4.581118715518162 17.08633344664372 7.072470491661402
 }
 TexturedBackground {
 }
@@ -50,7 +50,7 @@ DEF table2 Table {
   size 1 1.5 0.6
 }
 DEF water_bottle Can {
-  translation -0.45 0.64986 0.63
+  translation -0.45 0.64986 0.67
 }
 DEF box2 WoodenBox {
   translation -6.12 -4.64 0.3

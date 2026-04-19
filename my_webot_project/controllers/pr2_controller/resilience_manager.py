@@ -6,17 +6,22 @@ class ResilienceManager:
 
     def __init__(self, devices):
         self.D = set(devices)     # Component set
+        #self.compromised_set = {}
 
-        self.kappa = {}
+
+        # Task and goal specific criticality values
         self.tau = {}
         self.epsilon = {}
         self.current_task = {}
         self.current_goal = {}
+
+        # Thresholds
         self.theta_crit = 0.0
         self.theta_base = 0.0
         self.alpha_crit = 0.0
         self.alpha_base = 0.0
-
+        
+        # Attack state
         self.S = set() # Compromised set 
         self.mitigatable_devices = set()
         self.active_mitigation = set()
@@ -51,38 +56,31 @@ class ResilienceManager:
     def load_example(self, tau, epsilon, kappa, current_task, current_goal):
         self.tau = tau
         self.epsilon = epsilon
-        self.kappa = kappa
+        # self.kappa = kappa  # Not used anymore
         self.current_task = current_task
         self.current_goal = current_goal
 
     
-    # ''''''''''''''''''''''''''''''''''''''
-    # Compromised devices get added to S
-    # ''''''''''''''''''''''''''''''''''''''
-    '''
-    # low level representation of components
-     def update_compromised_set(self, ids_output: dict):
-        self.S.clear()
-
-        for d, confidence in ids_output.items():
-            if d in self.D and confidence >= self.kappa.get(d, 1.0): 
-                self.S.add(d)
-    '''
+    
+    
+   
 
     # high level representation of components
-    def update_compromised_set(self, ids_output: dict):
-        compromised_devices = set()
-
-        # 1. samla compromised devices (som nu)
-        for d, confidence in ids_output.items():
-            if d in self.D and confidence >= self.kappa.get(d, 1.0):
-                compromised_devices.add(d)
-
-        # 2. mappa till high-level components
-        self.S.clear()
-        for comp, devices in COMPONENT_MAP.items():
-            if any(d in compromised_devices for d in devices):
-                self.S.add(comp)
+    # def update_compromised_set(self, ids_output: dict):
+    #     compromised_devices = set()
+    #
+    #     # 1. samla compromised devices (som nu)
+    #     for d, confidence in ids_output.items():
+    #         if d not in self.D:
+    #             continue
+    #
+    #     kappa_d = self.compute_kappa(d)
+    #
+    #     print(f"[DEBUG] Device: {d}, I(d): {confidence}, kappa(d): {kappa_d}")
+    #
+    #
+    #     if confidence >= kappa_d:
+    #         compromised_devices.add(d)
     
 
 
@@ -162,6 +160,10 @@ class ResilienceManager:
     # Resilience evalutation
     # ''''''''''''''''''''''''
     def check_resilience(self):
+
+        print(f"[RM] S: {self.S}")
+        print(f"[RM] mitigatable: {self.mitigatable_devices}")
+        print(f"[RM] intersection: {self.S & self.mitigatable_devices}")
 
         # No attack
         if not self.S:

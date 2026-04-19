@@ -1,7 +1,7 @@
 '''
 Goal
 - Read JSON config
-- Set task, tau, epsilopn, kappa
+- Set task, tau, epsilon
 - Set thresholds (theta_crit and theta_base)
 - Listen for attacks via ROS 2
 '''
@@ -14,9 +14,9 @@ from controller import Supervisor
 from resilience_manager import ResilienceManager
 from ids import IDS
 import task
-from pr2_control import WHEEL_NAMES, LEFT_ARM_NAMES, RIGHT_ARM_NAMES, LEFT_FINGER_MOTOR, RIGHT_FINGER_MOTOR
+from pr2_control import WHEEL_NAMES, LEFT_ARM_NAMES, RIGHT_ARM_NAMES, LEFT_FINGER_MOTOR, RIGHT_FINGER_MOTOR, TORSO_NAMES, HEAD_NAMES
 from attack_executor import AttackExecutor
-from component_mapping import COMPONENT_MAP
+from component_mapping import COMPONENT_MAP, map_to_high_level
 from ros2_subscriber import SubscriberNode
 
 # ---------------------
@@ -34,6 +34,15 @@ with open(config_path) as f:
 supervisor = Supervisor()
 timestep = int(supervisor.getBasicTimeStep())
 
+'''
+num_devices = supervisor.getNumberOfDevices()
+
+print("=== ALL AVAILABLE DEVICES ===")
+for i in range(num_devices):
+    device = supervisor.getDeviceByIndex(i)
+    print(f"{i}: {device.getName()} ({device.getNodeType()})")
+'''
+
 # ---------------------
 # ROS2 setup
 # ---------------------
@@ -43,10 +52,11 @@ subscriber_node = SubscriberNode()
 #-----------------------
 # Init core modules
 # ----------------------
-devices = WHEEL_NAMES + LEFT_ARM_NAMES + RIGHT_ARM_NAMES + [LEFT_FINGER_MOTOR, RIGHT_FINGER_MOTOR]
+devices = WHEEL_NAMES + LEFT_ARM_NAMES + RIGHT_ARM_NAMES + [LEFT_FINGER_MOTOR] + [RIGHT_FINGER_MOTOR] + TORSO_NAMES + HEAD_NAMES
 
 RM = ResilienceManager(devices)
-ids = IDS(devices)
+detection_probability = config.get("ids", {}).get("detection_probability", 1.0)
+ids = IDS(devices, detection_probability=detection_probability)
 attack_executor = AttackExecutor(supervisor, COMPONENT_MAP)
 
 # ------------------------
@@ -76,7 +86,7 @@ waypoints[goal_pos_name] = supervisor.getFromDef(goal_pos_name).getPosition()
 
 
 # ------------------------------
-# Build tau / epsilon / kappa
+# Build tau / epsilon
 # ------------------------------
 task_name = task_type
 goal_name = goal_pos_name
@@ -91,24 +101,29 @@ for comp, val in config["tau"].items():
 for comp, val in config["epsilon"].items():
     epsilon[(comp, goal_name)] = val
 
-for comp, val in config["kappa"].items():
-    kappa[(comp)] = val
+#for comp, val in config["kappa"].items():
+#    kappa[(comp)] = val
 
 RM.load_example(
     tau,
     epsilon,
-    kappa,
+    {},  # kappa not used anymore
     task_name,
     goal_name
 )
 
+# Load task/goal parameters into IDS
+ids.load_kappa_sets(tau, epsilon, task_name, goal_name)
+
 # -----------------------------
-# Thresholds (theta & alpha)
+# Thresholds (theta, alpha, kappa)
 # -----------------------------
 RM.theta_crit = config["thresholds"]["theta_crit"]
 RM.theta_base = config["thresholds"]["theta_base"]
 RM.alpha_crit = config["thresholds"]["alpha_crit"]
 RM.alpha_base = config["thresholds"]["alpha_base"]
+ids.kappa_crit = config["thresholds"]["kappa_crit"]
+ids.kappa_base = config["thresholds"]["kappa_base"]
 
 # ----------------------
 # Mitigation
@@ -128,10 +143,16 @@ def check_resilience_live():
     # Update IDS
     #compromised = [a["component"] for a in attack_executor.active_attacks]
     ids.update_attack_state(subscriber_node.attack_state)
-    ids_output = ids.get_probability_output()
+    #ids_output = ids.get_probability_output() # dict
 
-    # Update S in RM
-    RM.update_compromised_set(ids_output)
+
+    # Update S in IDS
+    ids.update_compromised_set()
+
+    S_high = map_to_high_level(ids.S, COMPONENT_MAP)
+
+    # Pass S to RM
+    RM.S = S_high
 
     # Check resilience
     result, neutralized = RM.check_resilience()

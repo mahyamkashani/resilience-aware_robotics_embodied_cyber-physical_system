@@ -18,6 +18,9 @@ def mitigation_feasability(S, tau, epsilon, current_task, current_goal, mitigata
 
     # Devices in S that can be mitigated
     mitigatable = S & mitigatable_devices
+    print(f"S: {S}")
+    print(f"mitigatable_devices: {mitigatable_devices}")
+    print(f"intersection: {S & mitigatable_devices}")
     for subset in powerset(mitigatable):
         S_prime = S - subset
 

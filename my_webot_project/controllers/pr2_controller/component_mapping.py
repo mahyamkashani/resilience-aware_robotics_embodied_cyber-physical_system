@@ -37,6 +37,19 @@ COMPONENT_MAP = {
         "r_gripper_l_finger_tip_contact_sensor",
         "r_gripper_r_finger_tip_contact_sensor",
     ],
-    "torso": ["torso_lift_joint"],
-    "head": ["head_tilt_joint"]
+    "head": [
+        "head_pan_joint",
+        "head_tilt_joint"
+    ],
+    "torso": ["torso_lift_joint"]
+    
 }
+
+def map_to_high_level(S_low, component_map):
+    S_high = set()
+
+    for comp, devices in component_map.items():
+        if any(d in S_low for d in devices):
+            S_high.add(comp)
+
+    return S_high

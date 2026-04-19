@@ -69,7 +69,7 @@ def pickup_object(supervisor, arm, object_name, timestep, resilience_check=None,
     # open gripper
     result = pr2.set_gripper(supervisor, arm, open=True, torque_when_gripping=0.0, timestep=timestep)
 
-    goal = [-1.38701,0.258347] # Position to pikc up water bottle @ table1
+    goal = [-1.38701,0.26] # Position to pikc up water bottle @ table1
     result = move(supervisor, goal, timestep, resilience_check, resilience_manager, goal_node=None, attack_executor=attack_executor)
 
     # lower arm towards object (positive shoulder_lift = arm goes down)

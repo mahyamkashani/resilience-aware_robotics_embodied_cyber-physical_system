@@ -50,6 +50,14 @@ RIGHT_FINGER_MOTOR = "r_finger_gripper_motor::r_finger"
 LEFT_CONTACT_SENSORS = ["l_gripper_l_finger_tip_contact_sensor", "l_gripper_r_finger_tip_contact_sensor"]
 RIGHT_CONTACT_SENSORS = ["r_gripper_l_finger_tip_contact_sensor", "r_gripper_r_finger_tip_contact_sensor"]
 
+# Not used in any of the functions (but added in the COMPONENT MAPPING)
+TORSO_NAMES = ["torso_lift_joint"]
+HEAD_NAMES = [
+    "head_pan_joint",
+    "head_tilt_joint"
+    ]
+
+
 LEFT = "left"
 RIGHT = "right"
 _gripper_max_torque = {LEFT: None, RIGHT: None}

@@ -10,34 +10,22 @@
     "theta_crit": 0.85,
     "theta_base": 0.75,
     "alpha_crit": 0.2,
-    "alpha_base": 0.05
+    "alpha_base": 0.05,
+    "kappa_crit": 0.4,
+    "kappa_base": 0.8
   },
 
   "tau": {
     "left_wheels": 2,
     "right_wheels": 2,
-    "left_arm": 1,
-    "right_arm": 1,
+    "left_arm": 2,
+    "right_arm": 2,
     "torso": 0,
     "head": 0
   },
 
   "epsilon": {
-    "left_wheels": 2,
-    "right_wheels": 2,
-    "left_arm": 1,
-    "right_arm": 1,
-    "torso": 0,
-    "head": 0
-  },
-
-  "kappa": {
-    "left_wheels": 0.5,
-    "right_wheels": 0.5,
-    "left_arm": 0.5,
-    "right_arm": 0.5,
-    "torso": 0.5,
-    "head": 0.5
+    "distance_sensor": 2
   },
 
   "mitigation": {
@@ -46,5 +34,10 @@
       "left_wheels",
       "right_wheels"
     ]
+  },
+
+  "ids": {
+    "detection_probability_crit": 0.8,
+    "detection_probability_base" : 0.4
   }
 }
