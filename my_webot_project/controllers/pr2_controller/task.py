@@ -1,8 +1,9 @@
 import math
 import pr2_control as pr2
+import obstacle_avoidance as oa
 
 
-def move(supervisor, goal_pos, timestep, resilience_check=None, resilience_manager=None, goal_node=None, attack_executor=None):
+def move(supervisor, goal_pos, timestep, resilience_check=None, resilience_manager=None, goal_node=None, attack_executor=None, avoid_obstacles=False):
     robot_pos = supervisor.getSelf().getPosition() # Start position of robot
 
     dx = goal_pos[0] - robot_pos[0]
@@ -31,6 +32,16 @@ def move(supervisor, goal_pos, timestep, resilience_check=None, resilience_manag
     if result == "HALTED":
         return "HALTED"
 
+    if avoid_obstacles:
+        ds_left, ds_right = oa.init_sensors(supervisor, timestep)
+        return oa.navigate_with_avoidance(
+            supervisor, goal_pos, timestep, ds_left, ds_right,
+            goal_node=goal_node,
+            resilience_check=resilience_check,
+            resilience_manager=resilience_manager,
+            attack_executor=attack_executor,
+        )
+
     # Drive towards goal position
     result = pr2.robot_go_forward(supervisor, distance, timestep, resilience_check, resilience_manager, goal_node, attack_executor)
     if result == "HALTED":
@@ -40,10 +51,10 @@ def move(supervisor, goal_pos, timestep, resilience_check=None, resilience_manag
 
 # ── Composite tasks ────────────────────────────────────────────
 
-def navigate_to_goal(supervisor, waypoints, goal_name, timestep, resilience_check=None, resilience_manager=None, attack_executor=None):
+def navigate_to_goal(supervisor, waypoints, goal_name, timestep, resilience_check=None, resilience_manager=None, attack_executor=None, avoid_obstacles=False):
     goal = waypoints[goal_name]
     goal_node = supervisor.getFromDef(goal_name)
-    return move(supervisor, goal, timestep, resilience_check, resilience_manager, goal_node, attack_executor)
+    return move(supervisor, goal, timestep, resilience_check, resilience_manager, goal_node, attack_executor, avoid_obstacles=avoid_obstacles)
 
 
 
@@ -69,7 +80,7 @@ def pickup_object(supervisor, arm, object_name, timestep, resilience_check=None,
     # open gripper
     result = pr2.set_gripper(supervisor, arm, open=True, torque_when_gripping=0.0, timestep=timestep)
 
-    goal = [-1.38701,0.258347] # Position to pikc up water bottle @ table1
+    goal = [-1.38701,0.288347] # Position to pikc up water bottle @ table1
     result = move(supervisor, goal, timestep, resilience_check, resilience_manager, goal_node=None, attack_executor=attack_executor)
 
     # lower arm towards object (positive shoulder_lift = arm goes down)
@@ -84,7 +95,7 @@ def pickup_object(supervisor, arm, object_name, timestep, resilience_check=None,
     return result
 
 
-def navigagte_and_pickup_object(supervisor, waypoints, goal_name, arm, object_name, timestep, resilience_check=None, resilience_manager=None, attack_executor=None):
+def navigagte_and_pickup_object(supervisor, waypoints, goal_name, arm, object_name, timestep, resilience_check=None, resilience_manager=None, attack_executor=None, avoid_obstacles=False):
 
     # Navigate to object and pick it up
     result = pickup_object(supervisor, arm, object_name, timestep, resilience_check=resilience_check, resilience_manager=resilience_manager, attack_executor=attack_executor)
@@ -94,7 +105,7 @@ def navigagte_and_pickup_object(supervisor, waypoints, goal_name, arm, object_na
     # Navigate to new position and drop object
     goal = waypoints[goal_name]
     goal_pos = [goal[0] + 0.8, goal[1], goal[2]]    # Stop before table
-    result = move(supervisor, goal_pos, timestep, resilience_check, resilience_manager, goal_node=None,attack_executor=attack_executor)
+    result = move(supervisor, goal_pos, timestep, resilience_check, resilience_manager, goal_node=None, attack_executor=attack_executor, avoid_obstacles=avoid_obstacles)
     if result == "HALTED":
         return "HALTED"
 

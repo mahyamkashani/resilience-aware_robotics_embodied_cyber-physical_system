@@ -1,0 +1,36 @@
+{
+  "task": {
+    "type": "navigate_and_pickup",
+    "goal": "table2",
+    "object": "water_bottle",
+    "arm": "left"
+  },
+
+  "thresholds": {
+    "theta_crit": 0.5,
+    "theta_base": 0.75,
+    "alpha_crit": 0.2,
+    "alpha_base": 0.05,
+    "kappa_crit": 0.1,
+    "kappa_base": 0.6
+  },
+  "tau": {
+    "left_wheels": 2,
+    "right_wheels": 2,
+    "left_arm": 2,
+    "right_arm": 1,
+    "left_gripper": 2,
+    "right_gripper": 1
+  },
+
+  "epsilon": {
+    "distance_sensor": 2,
+    "camera": 2
+  },
+
+  "mitigation": {
+    "enabled_devices": [
+      ""
+    ]
+  }
+}

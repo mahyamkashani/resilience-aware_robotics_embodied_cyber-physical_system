@@ -134,6 +134,7 @@ def apply_wheel_speeds(supervisor, max_wheel_speed, resilience_manager):
         set_wheels_speed(supervisor, max_wheel_speed)
 
 
+
 # '''''''''''''''''''''''''''
 # Primitive actions 
 # '''''''''''''''''''''''''''
@@ -186,8 +187,55 @@ def robot_rotate(supervisor, angle, timestep, resilience_check=None, resilience_
     return "DONE"
 
 
-def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resilience_manager=None, goal_node=None,  attack_executor=None):
-    
+def robot_go_sideways(supervisor, distance, timestep, resilience_check=None, resilience_manager=None, attack_executor=None):
+    """Strafe left (distance > 0) or right (distance < 0) using caster rotation."""
+    caster_angle = math.pi / 2 if distance > 0 else -math.pi / 2
+    stop_wheels(supervisor)
+    set_rotation_wheels_angles(
+        supervisor,
+        caster_angle, caster_angle, caster_angle, caster_angle,
+        timestep, wait_on_feedback=True
+    )
+
+    max_wheel_speed = MAX_WHEEL_SPEED if distance > 0 else -MAX_WHEEL_SPEED
+    set_wheels_speed(supervisor, max_wheel_speed)
+
+    wheel_sensor = supervisor.getDevice("fl_caster_l_wheel_joint_sensor")
+    wheel_sensor.enable(timestep)
+    supervisor.step(timestep)
+    initial_pos = wheel_sensor.getValue()
+    braking = False
+
+    while supervisor.step(timestep) != -1:
+        if resilience_check:
+            resilient = resilience_check()
+            if not resilient:
+                if resilience_manager and resilience_manager.pending_mitigation:
+                    pass
+                elif attack_executor and attack_executor.has_active_attacks():
+                    pass
+                else:
+                    stop_wheels(supervisor)
+                    set_rotation_wheels_angles(supervisor, 0, 0, 0, 0, timestep, wait_on_feedback=True)
+                    return "HALTED"
+
+        travel = abs(WHEEL_RADIUS * (wheel_sensor.getValue() - initial_pos))
+        if travel > abs(distance):
+            break
+
+        if not braking and abs(distance) - travel < 0.025:
+            max_wheel_speed = 0.1 * max_wheel_speed
+            braking = True
+
+        apply_wheel_speeds(supervisor, max_wheel_speed, resilience_manager)
+
+    set_rotation_wheels_angles(supervisor, 0, 0, 0, 0, timestep, wait_on_feedback=True)
+    stop_wheels(supervisor)
+    return "DONE"
+
+
+def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resilience_manager=None, goal_node=None, attack_executor=None):
+
     max_wheel_speed = MAX_WHEEL_SPEED if distance > 0 else -MAX_WHEEL_SPEED
     set_wheels_speed(supervisor, max_wheel_speed)
 
@@ -210,7 +258,6 @@ def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resi
                     stop_wheels(supervisor)
                     return "HALTED"
 
-
         # Stop when contact made with goal/object
         if goal_node and len(goal_node.getContactPoints()) > 0:
             stop_wheels(supervisor)
@@ -221,7 +268,7 @@ def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resi
             break
         if not braking and abs(distance) - travel < 0.025:
             max_wheel_speed = 0.1 * max_wheel_speed
-            braking = True  
+            braking = True
 
         if not (attack_executor and attack_executor.has_active_attacks()):
             apply_wheel_speeds(supervisor, max_wheel_speed, resilience_manager)

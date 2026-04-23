@@ -156,7 +156,8 @@ if task_type == "navigate":
         timestep,
         resilience_check=check_resilience_live,
         resilience_manager=RM,
-        attack_executor=attack_executor
+        attack_executor=attack_executor,
+        avoid_obstacles=config.get("obstacle_avoidance", False),
     )
 
 elif task_type == "pickup":
@@ -180,7 +181,8 @@ elif task_type == "navigate_and_pickup":
         timestep,
         resilience_check=check_resilience_live,
         resilience_manager=RM,
-        attack_executor=attack_executor
+        attack_executor=attack_executor,
+        avoid_obstacles=config.get("obstacle_avoidance", False),
     )
 
 print(f"Task result: {result}")

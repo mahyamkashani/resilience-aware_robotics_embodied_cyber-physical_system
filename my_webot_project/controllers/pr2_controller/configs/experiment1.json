@@ -6,6 +6,8 @@
     "arm": "left"
   },
 
+  "obstacle_avoidance": true,
+
   "thresholds": {
     "theta_crit": 0.85,
     "theta_base": 0.75,
