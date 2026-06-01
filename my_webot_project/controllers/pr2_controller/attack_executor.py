@@ -5,8 +5,10 @@ GOAL
 - Apply attacks
 '''
 
+import random
+
 # TODO: add attack on wheels where with different speed 
-from pr2_control import MAX_WHEEL_SPEED, LEFT_FINGER_MOTOR, RIGHT_FINGER_MOTOR # 3.0   
+from pr2_hardware_control import MAX_WHEEL_SPEED, LEFT_FINGER_MOTOR, RIGHT_FINGER_MOTOR # 3.0   
 
 class AttackExecutor:
 
@@ -14,9 +16,10 @@ class AttackExecutor:
         self.supervisor = supervisor
         self.component_map = component_map
         self.active_attacks = []
+        self.random_value = {}
 
     def update(self, attacks):
-        """Ex attack msg: {component: "left_wheels": "type": "DOS"}"""
+        """Ex attack msg: {component: "left_wheels": "type": "STOP"}"""
         self.active_attacks = attacks
 
     def has_active_attacks(self):
@@ -29,6 +32,9 @@ class AttackExecutor:
             attack for attack in self.active_attacks
             if attack["component"] not in neutralized_devices
         ]
+
+        for comp in neutralized_devices:
+            self.random_value.pop(comp, None)
 
 
     def apply(self):
@@ -51,27 +57,41 @@ class AttackExecutor:
                     motor.setPosition(float('inf'))
                     motor.setVelocity(0.0)
         # overspeed
-        if attack_type == "OVERSPEED":
+        elif attack_type == "OVERSPEED":
+
+            if component_name not in self.random_value:
+                self.random_value[component_name] = random.choice([
+                    1.1, 1.2, 1.3, 1.4, 1.5
+                ])
+
+            ran = self.random_value[component_name]
+
             for name in component:
-                #print(name)
                 motor = self.supervisor.getDevice(name)
                 if motor:
-                    #print(f'settng motor speed')
                     motor.setPosition(float('inf'))
-                    motor.setVelocity(MAX_WHEEL_SPEED * 1.5)
+                    motor.setVelocity(MAX_WHEEL_SPEED * ran)
 
         # underspeed
-        if attack_type == "UNDERSPEED":
-            #print("applying underspeed attack")
+        elif attack_type == "UNDERSPEED":
+
+            if component_name not in self.random_value:
+                #self.random_value[component_name] = random.uniform(0.5, 1.0)
+                self.random_value[component_name] = 0.6
+
+            ran = self.random_value[component_name]
+
+            #print(f"[ATTACK] {component_name} underspeed factor: {ran}")
+
             for name in component:
-                #print(name)
                 motor = self.supervisor.getDevice(name)
                 if motor:
-                    #print(f'settng motor speed')
                     motor.setPosition(float('inf'))
-                    motor.setVelocity(MAX_WHEEL_SPEED * 0.5)
+                    motor.setVelocity(MAX_WHEEL_SPEED * ran)
 
-        # underspeed
+        
+        
+        # Go backwards
         if attack_type == "BACKWARD":
             for name in component:
                 #print(name)
@@ -94,6 +114,8 @@ class AttackExecutor:
                 if motor:
                     motor.setAvailableTorque(0.01)  # Set to minimal torque
 
+
+'''
         # In progress...
         if attack_type == "GRIP_STRONG":
             """Increase gripper torque to make gripping very strong"""
@@ -108,4 +130,4 @@ class AttackExecutor:
                 if motor:
                     max_torque = motor.getMaxTorque()
                     motor.setAvailableTorque(max_torque * 10.0)  # Increase beyond normal
-
+'''

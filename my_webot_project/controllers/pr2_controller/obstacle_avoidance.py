@@ -1,6 +1,6 @@
 import math
 from components.distance_sensor import DistanceSensor
-import pr2_control as pr2
+import pr2_hardware_control as pr2
 
 AVOIDANCE_THRESHOLD = 0.50   # closeness score to start reacting  → ~1.0 m away
 STOP_THRESHOLD      = 0.75   # closeness score on BOTH sides → ~0.5 m away (emergency)

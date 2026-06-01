@@ -23,8 +23,7 @@
   },
 
   "epsilon": {
-    "distance_sensor": 0,
-    "camera": 2
+    "distance_sensor": 0
   },
 
   "mitigation": {

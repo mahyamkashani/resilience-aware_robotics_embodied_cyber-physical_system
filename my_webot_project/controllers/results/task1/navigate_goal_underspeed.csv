@@ -1,0 +1,31 @@
+Test 1: 
+navigate_to_goal
+detection rate: 100%
+theta_crit: 0.4
+alpha_crit: 0.2
+only attacks on critcal devices
+attacks are applied at the same time
+wheel speed is applied with a random value between 0.5 and 1.0
+no mitigations
+-------------------------------------------------------
+detection_rate,delta,gamma,resilient,result,time,degradation
+1.0,0,1,NOT RESILIENT,DONE,27.1,16.3
+1.0,0,1,NOT RESILIENT,DONE,33.1,42.0
+1.0,0,1,NOT RESILIENT,DONE,41.2,77.0
+1.0,0,1,NOT RESILIENT,DONE,30.7,31.6
+1.0,0,1,NOT RESILIENT,DONE,29.1,24.7
+1.0,0,1,NOT RESILIENT,DONE,27.4,17.6
+1.0,0,1,NOT RESILIENT,DONE,27.1,16.3
+1.0,0,1,NOT RESILIENT,DONE,31.5,35.0
+1.0,0,1,NOT RESILIENT,DONE,33.8,45.2
+1.0,0,1,NOT RESILIENT,DONE,32.4,39.3
+1.0,0,1,NOT RESILIENT,DONE,35.0,50.2
+1.0,0,1,NOT RESILIENT,DONE,30.7,31.7
+1.0,0,1,NOT RESILIENT,DONE,30.7,31.6
+1.0,0,1,NOT RESILIENT,DONE,31.9,37.1
+1.0,0,1,NOT RESILIENT,DONE,33.6,44.3
+1.0,0,1,NOT RESILIENT,DONE,32.2,38.0
+1.0,0,1,NOT RESILIENT,DONE,28.6,22.8
+1.0,0,1,NOT RESILIENT,DONE,27.9,19.9
+1.0,0,1,NOT RESILIENT,DONE,27.9,19.6
+1.0,0,1,NOT RESILIENT,DONE,29.8,27.9

@@ -5,14 +5,20 @@
     "object": "water_bottle",
     "arm": "left"
   },
+  
+  "baseline_time": 48.9,
+
+  "obstacle_avoidance": false,
+
+  "mitigation_delay_steps": 100,
 
   "thresholds": {
-    "theta_crit": 0.5,
+    "theta_crit": 0.9,
     "theta_base": 0.75,
     "alpha_crit": 0.2,
     "alpha_base": 0.05,
-    "kappa_crit": 0.1,
-    "kappa_base": 0.6
+    "kappa_crit": 0.0,
+    "kappa_base": 0.0
   },
   "tau": {
     "left_wheels": 2,
@@ -24,13 +30,10 @@
   },
 
   "epsilon": {
-    "distance_sensor": 2,
-    "camera": 2
+    "distance_sensor": 2
   },
 
   "mitigation": {
-    "enabled_devices": [
-      ""
-    ]
+    "enabled_devices": []
   }
 }

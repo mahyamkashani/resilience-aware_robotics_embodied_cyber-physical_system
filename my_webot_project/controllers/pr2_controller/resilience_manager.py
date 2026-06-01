@@ -1,13 +1,12 @@
-from disruption_degradation import degradation, disruption 
+from disruption_degradation import degradation, disruption, monotonic_degradation
 from mitigation_feasability import mitigation_feasability
 from component_mapping import COMPONENT_MAP
 
 class ResilienceManager:
 
     def __init__(self, devices):
-        self.D = set(devices)     # Component set
+        self.D = set(devices)     # High level representation
 
-        self.kappa = {}
         self.tau = {}
         self.epsilon = {}
         self.current_task = {}
@@ -23,16 +22,17 @@ class ResilienceManager:
         self.current_resilient = ""
         self.current_attacks = []
 
-        self.normal_speed = 3.0
-        self.degraded_speed = 1.0
-
         self.current_delta = None
         self.current_gamma = None
 
         # Delay mitigating action when robot under attack (for simulation purposes)
-        self.mitigation_delay_steps = 100
+        self.mitigation_delay_steps = None
         self.mitigation_timer = 0
         self.pending_mitigation = set()
+
+        self.baseline_time = None
+        self.start_timer = None
+        self.halt_multiplier = 2.0 # halt after 2x baseline
 
         # Used for logger function
         self.prev_S = set()
@@ -40,6 +40,7 @@ class ResilienceManager:
         self.prev_mitigation = set()
         self.prev_delta = None
         self.prev_gamma = None
+        self.psi = None
         self.prev_pending_mitigation = set()
         self.prev_no_mitigation_possible = False
         self.prev_attacks = []
@@ -96,6 +97,24 @@ class ResilienceManager:
             self.active_mitigation = self.pending_mitigation
             self.pending_mitigation = set()
 
+
+    # ''''''''''''''''''''''''''''''''''''''''''''''''''''
+    # HALT system if task takes too long
+    # ''''''''''''''''''''''''''''''''''''''''''''''''''''
+    def tick_halt_timer(self, current_time, start_time):
+        if self.baseline_time is None:
+            return False
+        
+        elapsed = current_time - start_time
+        halt_threshold = self.baseline_time * self.halt_multiplier
+
+        if self.current_resilient == "NOT RESILIENT" \
+            and not self.pending_mitigation \
+            and not self.active_mitigation:
+            if elapsed >= halt_threshold:
+                return True  # HALT
+        return False
+
     
     # '''''''''''''''''''''''''''''
     # Reset all mitigations state
@@ -130,11 +149,10 @@ class ResilienceManager:
     # Resilience evalutation
     # ''''''''''''''''''''''''
     def check_resilience(self):
-
         # No attack
         if not self.S:
             self.reset_mitigation()
-            return self.set_resilient(1,1), set()
+            return self.set_resilient(1, 1), set()
         
         # Reset mitigation if attack set changed
         if self.active_mitigation and not self.active_mitigation.issubset(self.S):
@@ -142,32 +160,32 @@ class ResilienceManager:
 
         # Delay mitigation
         self.tick_mitigation_timer()
-        
 
         # Evaluate disruption
-        delta = disruption(self.S, self.tau, self.epsilon, self.current_task, self.current_goal) 
+        delta = disruption(self.S, self.tau, self.epsilon, self.current_task, self.current_goal)
 
-        # Case 1: Not disrupted -> always resilient
-        if delta == 1: 
+        # Axiom 1: delta = 1 => gamma = 1 (no need to compute gamma)
+        if delta == 1:
             self.reset_mitigation()
-            return self.set_resilient(1,1), set()
-        
-        # Case 2: Disrupted -> evaluate degradation
+            return self.set_resilient(1, 1), set()
+
+        # delta = 0: now evaluate degradation
         gamma = degradation(self.S, self.tau, self.epsilon, self.current_task, self.current_goal, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base)
 
-        # Active mitigation  
+        # Case: Mitigation active
         if self.active_mitigation:
             s_effective = self.get_effective_state()
 
-            delta_eff = disruption(s_effective, self.tau, self.epsilon,self.current_task, self.current_goal)
+            delta_eff = disruption(s_effective, self.tau, self.epsilon, self.current_task, self.current_goal)
 
+            # Axiom 1 on effective state
             if delta_eff == 1:
                 return self.set_resilient(1, 1), self.active_mitigation
 
-            gamma_eff = degradation(s_effective, self.tau, self.epsilon,self.current_task, self.current_goal, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base)
+            gamma_eff = degradation(s_effective, self.tau, self.epsilon, self.current_task, self.current_goal, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base)
             return self.set_not_resilient(delta_eff, gamma_eff), set()
-        
-        # Try mitigation 
+
+        # Try mitigation
         if not self.pending_mitigation:
             my = mitigation_feasability(self.S, self.tau, self.epsilon, self.current_task, self.current_goal, self.mitigatable_devices, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base)
 
@@ -175,8 +193,8 @@ class ResilienceManager:
                 self.pending_mitigation = my["neutralized"]
                 self.mitigation_timer = self.mitigation_delay_steps
 
-        # No mitigation possible
-        return self.set_not_resilient(0, gamma), set()
+        # No mitigation possible (Not resilient)
+        return self.set_not_resilient(delta, gamma), set()
 
 
 
@@ -186,9 +204,9 @@ class ResilienceManager:
     def is_component_critical(self, component):
         #components = COMPONENT_MAP.get(component, [])
         if(
-            self.tau.get((component, self.current_task), 0) > 0
+            self.tau.get((component, self.current_task), 0) > 1
             or
-            self.epsilon.get((component, self.current_goal), 0) > 0
+            self.epsilon.get((component, self.current_goal), 0) > 1
         ):
             return True
         return False
@@ -203,59 +221,63 @@ class ResilienceManager:
             for attack in self.current_attacks:
                 comp = attack["component"]
                 attack_type = attack["type"]
-
                 critical = self.is_component_critical(comp)
-
                 if critical:
-                    print(f"[RM] ATTACK: {comp} ({attack_type}) - CRITICAL")
+                    print(f"ATTACK: {comp} ({attack_type}) - CRITICAL")
                 else:
-                    print(f"[RM] ATTACK: {comp} ({attack_type}) - NON-CRITICAL")
-
-            if not self.current_attacks:
-                print("[RM] No active attacks")
-
+                    print(f"ATTACK: {comp} ({attack_type}) - NON-CRITICAL")
             self.prev_attacks = list(self.current_attacks)
-
-        if self.S != self.prev_S:
-            print(f"[RM] Compromised set updated: {self.S}")
-            self.prev_S = self.S.copy()
-
-        # Pending mitigation
-        if self.pending_mitigation != self.prev_pending_mitigation:
-            if self.pending_mitigation:
-                print("[RM] Mitigation pending")
-            else:
-                print("[RM] Pending mitigation cleared")
-            self.prev_pending_mitigation = self.pending_mitigation.copy()
 
         # Active mitigation
         if self.active_mitigation != self.prev_mitigation:
             if self.active_mitigation:
                 print(f"[RM] Active mitigation neutralizing: {self.active_mitigation}")
-            else:
-                print("[RM] No active mitigation")
             self.prev_mitigation = self.active_mitigation.copy()
 
-        # Resilience state changed
-        if self.current_resilient != self.prev_resilient:
-            print(f"[RM] Resilience state: {self.current_resilient}")
-            self.prev_resilient = self.current_resilient
+        # Compromised set
+        if self.S != self.prev_S:
+            print(f"[RM] Compromised set S updated: {self.S}")
+            self.prev_S = self.S.copy()
 
         # Disruption
         if self.current_delta != self.prev_delta:
             if self.current_delta == 0:
-                print("[RM] System disrupted (delta = 0)")
+                print("[RM] System disrupted → δ = 0")
             else:
-                print("[RM] Disruption cleared (delta = 1)")
+                print("[RM] System not disrupted → δ = 1")
             self.prev_delta = self.current_delta
 
-        # Degradation
+            # Axiom 1: delta = 0 -> alltid logga gamma
+            if self.current_delta == 0:
+                self.prev_gamma = None  # tvinga gamma-blocket att trigga
+
+        # Degradation (loggas alltid när delta = 0 och ändras)
         if self.current_gamma != self.prev_gamma:
             if self.current_gamma == 0:
-                print("[RM] System degraded beyond tolerance (gamma = 0)")
+                self.psi = monotonic_degradation(
+                    self.S,
+                    self.tau,
+                    self.epsilon,
+                    self.current_task,
+                    self.current_goal,
+                    self.alpha_crit,
+                    self.alpha_base
+                )
+                print(f"[RM] System degraded beyond tolerance: ψ={self.psi:.1f} < θ={self.theta_crit:.1f} → γ = {self.current_gamma}")
             else:
-                print("[RM] Degradation within tolerance (gamma = 1)")
+                print("[RM] Degradation within tolerance → γ = 1")
             self.prev_gamma = self.current_gamma
+
+        # Resilience state
+        if self.current_resilient != self.prev_resilient:
+            print(f"[RM] Resilience state: {self.current_resilient}")
+            self.prev_resilient = self.current_resilient
+
+        # Pending mitigation
+        if self.pending_mitigation != self.prev_pending_mitigation:
+            if self.pending_mitigation:
+                print("[RM] Mitigation pending")
+            self.prev_pending_mitigation = self.pending_mitigation.copy()
 
         # No mitigation possible
         if self.current_resilient == "NOT RESILIENT" \

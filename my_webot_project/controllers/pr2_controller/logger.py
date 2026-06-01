@@ -1,31 +1,44 @@
 import csv
 import os
 
-FILE_PATH = "results.csv"
+#FILE_PATH = "results.csv"
 
-def log_result(theta_crit, run_id, output):
+def log_result(file_path, output):
 
-    file_exists = os.path.isfile(FILE_PATH)
+    file_exists = os.path.isfile(file_path)
 
-    with open(FILE_PATH, "a", newline="") as f:
+    detection_rate = 1 - output["kappa_crit"]
+    #degradation_percent = round(output["degradation"] * 100, 1)
+    #time = round(output["time"],1)
+
+    with open(file_path, "a", newline="") as f:
         writer = csv.writer(f)
 
         # skriv header EN gång
         if not file_exists:
             writer.writerow([
-                "theta_crit",
-                "run",
+                "detection_rate",
                 "delta",
                 "gamma",
                 "resilient",
-                "result"
+                "result",
+                #"time",
+                #"degradation",
+                "theta_base",
+                "alpha_base",
+                "psi"
+
             ])
 
         writer.writerow([
-            theta_crit,
-            run_id,
+            detection_rate,
             output["delta"],
             output["gamma"],
             output["resilient"],
-            output["result"]
+            output["result"],
+            #time,
+            #degradation_percent,
+            output["theta_base"],
+            output["alpha_base"],
+            output["psi"]
         ])

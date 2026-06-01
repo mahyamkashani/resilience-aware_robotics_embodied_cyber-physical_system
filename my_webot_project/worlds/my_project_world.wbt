@@ -12,25 +12,28 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.17990755789523993 -0.146971934913509 0.972642031252994 4.484463914450693
-  position -1.9762414958671228 17.370831580568932 6.7392951413858375
+  orientation 0.1749360734796482 -0.1588050586914886 -0.9716883880800038 4.587253521893274
+  position -0.33692775489279114 -21.645486229314038 8.98014977084944
+  follow "PR2"
+  followType "None"
 }
 TexturedBackground {
+  texture "noon_building_overcast"
 }
 TexturedBackgroundLight {
 }
 RectangleArena {
   translation -1.92 0 0
-  floorSize 20 12
+  floorSize 15 12
   floorAppearance Parquetry {
     type "light strip"
   }
 }
 Pr2 {
   translation -4.63701 0.258347 -0.017623
-  controller "pr2_controller"
+  controller "<extern>"
   controllerArgs [
-    "configs/experiment1.json"
+    "configs/experiment2.json"
   ]
   supervisor TRUE
   baseSlot [
@@ -39,10 +42,9 @@ Pr2 {
       rotation 0 0 1 0.15
       name "ds_left"
       lookupTable [
-        0   1 0
-        2.0 0 0
+        0 1 0
+        2 0 0
       ]
-      type "generic"
       numberOfRays 7
       aperture 0.9
     }
@@ -51,17 +53,16 @@ Pr2 {
       rotation 0 0 1 -0.15
       name "ds_right"
       lookupTable [
-        0   1 0
-        2.0 0 0
+        0 1 0
+        2 0 0
       ]
-      type "generic"
       numberOfRays 7
       aperture 0.9
     }
   ]
 }
 DEF box1 WoodenBox {
-  translation -8.57 3.55 0.3
+  translation -4.48 3.55 0.3
   name "box1"
 }
 DEF table1 Table {
@@ -79,12 +80,11 @@ DEF water_bottle Can {
   translation -0.45 0.64986 0.63
 }
 DEF box2 WoodenBox {
-  translation -6.12 -4.64 0.3
+  translation -8.61 -4.64 0.3
   name "box2"
 }
 DEF obstacle1 WoodenBox {
-  translation -5.64 0.25 0.3
+  translation -5.64 2.35 0.3
   name "obstacle1"
   size 0.4 0.4 0.6
 }
-

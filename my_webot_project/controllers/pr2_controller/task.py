@@ -1,8 +1,10 @@
 import math
-import pr2_control as pr2
+import pr2_hardware_control as pr2
 import obstacle_avoidance as oa
 
-def move(supervisor, goal_pos, timestep, resilience_check=None, resilience_manager=None, goal_node=None, attack_executor=None, avoid_obstacles=False):
+
+
+def move(supervisor, goal_pos, timestep, resilience_check=None, resilience_manager=None, goal_node=None, attack_executor=None, avoid_obstacles=False, runtime_check=None):
     robot_pos = supervisor.getSelf().getPosition() # Start position of robot
 
     dx = goal_pos[0] - robot_pos[0]
@@ -22,10 +24,6 @@ def move(supervisor, goal_pos, timestep, resilience_check=None, resilience_manag
     while error >  math.pi: error -= 2 * math.pi
     while error < -math.pi: error += 2 * math.pi
 
-    #print(f"angle_to_target: {math.degrees(angle_to_target):.1f} deg")
-    #print(f"robot_angle:     {math.degrees(robot_angle):.1f} deg")
-    #print(f"error:           {math.degrees(error):.1f} deg")
-
     # Turn towards goal position
     result = pr2.robot_rotate(supervisor, error, timestep, resilience_check, resilience_manager, attack_executor)
     if result == "HALTED":
@@ -42,7 +40,7 @@ def move(supervisor, goal_pos, timestep, resilience_check=None, resilience_manag
         )
 
     # Drive towards goal position
-    result = pr2.robot_go_forward(supervisor, distance, timestep, resilience_check, resilience_manager, goal_node, attack_executor)
+    result = pr2.robot_go_forward(supervisor, distance, timestep, resilience_check, resilience_manager, goal_node, attack_executor, runtime_check=runtime_check)
     if result == "HALTED":
         return "HALTED"
 
@@ -94,17 +92,20 @@ def pickup_object(supervisor, arm, object_name, timestep, resilience_check=None,
     return result
 
 
-def navigagte_and_pickup_object(supervisor, waypoints, goal_name, arm, object_name, timestep, resilience_check=None, resilience_manager=None, attack_executor=None, avoid_obstacles=False):
+def navigate_and_pickup_object(supervisor, waypoints, goal_name, arm, object_name, timestep, resilience_check=None, resilience_manager=None, attack_executor=None, avoid_obstacles=False):
 
     # Navigate to object and pick it up
     result = pickup_object(supervisor, arm, object_name, timestep, resilience_check=resilience_check, resilience_manager=resilience_manager, attack_executor=attack_executor)
     if result == "HALTED":
         return "HALTED"
+    
+    def grasp_check():
+        return pr2.object_grasped(supervisor, arm)
 
     # Navigate to new position and drop object
     goal = waypoints[goal_name]
     goal_pos = [goal[0] + 0.8, goal[1], goal[2]]    # Stop before table
-    result = move(supervisor, goal_pos, timestep, resilience_check, resilience_manager, goal_node=None, attack_executor=attack_executor, avoid_obstacles=avoid_obstacles)
+    result = move(supervisor, goal_pos, timestep, resilience_check, resilience_manager, goal_node=None, attack_executor=attack_executor, avoid_obstacles=avoid_obstacles, runtime_check=grasp_check)
     if result == "HALTED":
         return "HALTED"
 

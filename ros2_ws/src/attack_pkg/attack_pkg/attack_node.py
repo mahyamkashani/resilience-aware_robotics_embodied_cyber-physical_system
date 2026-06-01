@@ -5,7 +5,7 @@ from my_attack_interfaces.msg import AttackState
 class AttackNode(Node):
     def __init__(self):
         super().__init__('attack_publisher')
-        self.attack_publisher = self.create_publisher(AttackState, '/attack_state', 10)
+        self.attack_publisher = self.create_publisher(AttackState, '/active_attacks', 10)
 
     '''
     def trigger_attack(self):

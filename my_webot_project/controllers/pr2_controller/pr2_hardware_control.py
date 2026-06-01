@@ -1,7 +1,7 @@
 import math
 
 # PR2 constants
-MAX_WHEEL_SPEED = 3.0         # maximum velocity for the wheels [rad / s]
+MAX_WHEEL_SPEED = 4.0         # maximum velocity for the wheels [rad / s]
 WHEELS_DISTANCE = 0.4492      # distance between 2 caster wheels (the four wheels are located in square) [m]
 SUB_WHEELS_DISTANCE = 0.098   # distance between 2 sub wheels of a caster wheel [m]
 WHEEL_RADIUS = 0.08           # wheel radius
@@ -138,6 +138,18 @@ def apply_wheel_speeds(supervisor, max_wheel_speed, resilience_manager):
 # '''''''''''''''''''''''''''
 # Primitive actions 
 # '''''''''''''''''''''''''''
+def object_grasped(supervisor, arm):
+    contact_names = (
+        LEFT_CONTACT_SENSORS if arm == "left"
+        else RIGHT_CONTACT_SENSORS
+    )
+
+    contacts = [supervisor.getDevice(name) for name in contact_names]
+
+    left_contact = contacts[0].getValue()
+    right_contact = contacts[1].getValue()
+
+    return left_contact > 0.0 and right_contact > 0.0
 
 
 # High level function to rotate the robot around itself of a given angle [rad]
@@ -164,11 +176,9 @@ def robot_rotate(supervisor, angle, timestep, resilience_check=None, resilience_
         if resilience_check:
             resilient = resilience_check()
             if not resilient:
-                if resilience_manager and resilience_manager.pending_mitigation:
-                    pass
-                elif attack_executor and attack_executor.has_active_attacks():
-                    pass
-                else:
+                if resilience_manager and resilience_manager.tick_halt_timer(
+                    supervisor.getTime(), resilience_manager.start_time
+                ):
                     stop_wheels(supervisor)
                     return "HALTED"
 
@@ -210,11 +220,9 @@ def robot_go_sideways(supervisor, distance, timestep, resilience_check=None, res
         if resilience_check:
             resilient = resilience_check()
             if not resilient:
-                if resilience_manager and resilience_manager.pending_mitigation:
-                    pass
-                elif attack_executor and attack_executor.has_active_attacks():
-                    pass
-                else:
+                if resilience_manager and resilience_manager.tick_halt_timer(
+                    supervisor.getTime(), resilience_manager.start_time
+                ):
                     stop_wheels(supervisor)
                     set_rotation_wheels_angles(supervisor, 0, 0, 0, 0, timestep, wait_on_feedback=True)
                     return "HALTED"
@@ -234,7 +242,7 @@ def robot_go_sideways(supervisor, distance, timestep, resilience_check=None, res
     return "DONE"
 
 
-def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resilience_manager=None, goal_node=None, attack_executor=None):
+def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resilience_manager=None, goal_node=None, attack_executor=None, runtime_check=None):
 
     max_wheel_speed = MAX_WHEEL_SPEED if distance > 0 else -MAX_WHEEL_SPEED
     set_wheels_speed(supervisor, max_wheel_speed)
@@ -246,15 +254,26 @@ def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resi
     braking = False
 
     while supervisor.step(timestep) != -1:
+
+
+        if runtime_check:
+            if not runtime_check():
+                halt_wait = 0.0
+                while supervisor.step(timestep) != -1:
+                    halt_wait += timestep / 1000.0
+                    if halt_wait >= 2:  # 2 seconds delay
+                        break
+                stop_wheels(supervisor)
+                return "HALTED"
+
+
         if resilience_check:
             resilient = resilience_check()
 
             if not resilient:
-                if resilience_manager and resilience_manager.pending_mitigation:
-                    pass
-                elif attack_executor and attack_executor.has_active_attacks():
-                    pass
-                else:
+                if resilience_manager and resilience_manager.tick_halt_timer(
+                    supervisor.getTime(), resilience_manager.start_time
+                ):
                     stop_wheels(supervisor)
                     return "HALTED"
 
@@ -346,3 +365,5 @@ def set_gripper(supervisor, arm, open, torque_when_gripping, timestep, wait_on_f
             motor.setAvailableTorque(torque_when_gripping)
             motor.setPosition(max(0.0, 0.95 * current_pos))
     return "DONE"
+
+

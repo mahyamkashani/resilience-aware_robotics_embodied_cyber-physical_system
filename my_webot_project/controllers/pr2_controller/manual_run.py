@@ -1,9 +1,9 @@
 from pr2_controller import run_simulation
 from logger import log_result
 
-theta_crit = 0.85
-run_id = 1
+CONFIG = "configs/experiment2.json"
+RESULT_FILE = "../results/framework_correctness/exp1.csv"
 
-output = run_simulation("configs/experiment3.json", use_ros=True)
+output = run_simulation(CONFIG, use_ros=True)
 
-log_result(theta_crit, run_id, output)
+log_result(RESULT_FILE, output)
