@@ -138,7 +138,7 @@ def run_simulation(config_path, use_ros=True):
     # Used if tests were run automatically..
     def generate_attacks():
         return [
-            {"component": "left_wheels", "type": "UNDERSPEED"}
+            {"component": "left_gripper", "type": "GRIP_WEAK"}
         ]
 
 
@@ -237,7 +237,10 @@ def run_simulation(config_path, use_ros=True):
 
     baseline_time = config.get("baseline_time", None)
 
-    if baseline_time:
+    if result != "Done": # HALTED
+        degradation = None
+        print(f"Task {result} after {elapsed_time:.1f}s did not complete")
+    elif baseline_time:
         slowdown = elapsed_time - baseline_time
         degradation = max(0, slowdown / baseline_time)
         print(f'Task execution time increased with {slowdown:.1f} seconds')
