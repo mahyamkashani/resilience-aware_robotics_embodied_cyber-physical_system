@@ -22,8 +22,6 @@ webots ~/my_webot_project/worlds/my_project_world.wbt
 
 **Terminal 2: Run PR2 controller using configuration file:**
 ```bash
-/usr/local/webots/webots-controller   --robot-name=PR2
-
 python3 ~/my_webot_project/controllers/pr2_controller/pr2_controller.py  ~/my_webot_project/controllers/pr2_controller/configs/experiment2.json
 ```
 
