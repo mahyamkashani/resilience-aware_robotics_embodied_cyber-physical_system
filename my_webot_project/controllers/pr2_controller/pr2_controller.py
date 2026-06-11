@@ -13,7 +13,7 @@ from controller import Supervisor
 from resilience_manager import ResilienceManager
 from ids import IDS
 import task
-from pr2_hardware_control import WHEEL_NAMES, LEFT_ARM_NAMES, RIGHT_ARM_NAMES, LEFT_FINGER_MOTOR, RIGHT_FINGER_MOTOR
+from constants import AttackType
 from attack_executor import AttackExecutor
 from component_mapping import COMPONENT_MAP, map_to_high_level
 from disruption_degradation import monotonic_degradation
@@ -138,7 +138,7 @@ def run_simulation(config_path, use_ros=True):
     # Used if tests were run automatically..
     def generate_attacks():
         return [
-            {"component": "left_gripper", "type": "GRIP_WEAK"}
+            {"component": "left_gripper", "type": AttackType.GRIP_WEAK}
         ]
 
 

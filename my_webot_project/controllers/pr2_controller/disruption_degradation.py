@@ -39,7 +39,7 @@ def degradation(S, tau, epsilon, current_task, current_goal, theta_crit, theta_b
             tau.get((d, current_task), 0), 
             epsilon.get((d, current_goal), 0)
         )
-        if level == 2:
+        if level == 2: # required
             has_critical = True
             break
         

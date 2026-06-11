@@ -1,9 +1,12 @@
 from pr2_controller import run_simulation
 from logger import log_result
+from constants import CONFIG, RESULT_FILE
 
-CONFIG = "configs/experiment2.json"
-RESULT_FILE = "../results/framework_correctness/exp1.csv"
 
-output = run_simulation(CONFIG, use_ros=True)
+def main():
+    output = run_simulation(CONFIG, use_ros=True)
 
-log_result(RESULT_FILE, output)
+    log_result(RESULT_FILE, output)
+
+if __name__=="__main__":
+    main()

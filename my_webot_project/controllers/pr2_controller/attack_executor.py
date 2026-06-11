@@ -7,8 +7,8 @@ GOAL
 
 import random
 
-# TODO: add attack on wheels where with different speed 
-from pr2_hardware_control import MAX_WHEEL_SPEED, LEFT_FINGER_MOTOR, RIGHT_FINGER_MOTOR # 3.0   
+# TODO: add attack on wheels where with different speed
+from constants import AttackType, MAX_WHEEL_SPEED, LEFT_FINGER_MOTOR, RIGHT_FINGER_MOTOR # 3.0
 
 class AttackExecutor:
 
@@ -48,7 +48,7 @@ class AttackExecutor:
         component = self.component_map.get(component_name, [])
 
 
-        if attack_type == "STOP":
+        if attack_type == AttackType.STOP:
             for name in component:
                 #print(name)
                 motor = self.supervisor.getDevice(name)
@@ -57,7 +57,7 @@ class AttackExecutor:
                     motor.setPosition(float('inf'))
                     motor.setVelocity(0.0)
         # overspeed
-        elif attack_type == "OVERSPEED":
+        elif attack_type == AttackType.OVERSPEED:
 
             if component_name not in self.random_value:
                 self.random_value[component_name] = random.choice([
@@ -73,7 +73,7 @@ class AttackExecutor:
                     motor.setVelocity(MAX_WHEEL_SPEED * ran)
 
         # underspeed
-        elif attack_type == "UNDERSPEED":
+        elif attack_type == AttackType.UNDERSPEED:
 
             if component_name not in self.random_value:
                 #self.random_value[component_name] = random.uniform(0.5, 1.0)
@@ -92,7 +92,7 @@ class AttackExecutor:
         
         
         # Go backwards
-        if attack_type == "BACKWARD":
+        if attack_type == AttackType.BACKWARD:
             for name in component:
                 #print(name)
                 motor = self.supervisor.getDevice(name)
@@ -102,7 +102,7 @@ class AttackExecutor:
                     motor.setVelocity(-MAX_WHEEL_SPEED * 0.5)
 
         # Gripper attacks
-        if attack_type == "GRIP_WEAK":
+        if attack_type == AttackType.GRIP_WEAK:
             """Reduce gripper torque to make gripping weak"""
             if component_name == "left_gripper":
                 motor = self.supervisor.getDevice(LEFT_FINGER_MOTOR)

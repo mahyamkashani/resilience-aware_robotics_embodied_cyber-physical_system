@@ -186,7 +186,7 @@ class ResilienceManager:
             gamma_eff = degradation(s_effective, self.tau, self.epsilon, self.current_task, self.current_goal, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base)
             
             if delta_eff == 1 and gamma_eff ==1:
-               return self.set_resilient(1, 1), self.active_mitigation
+              return self.set_resilient(1, 1), self.active_mitigation
             
             return self.set_not_resilient(delta_eff, gamma_eff), set()
 

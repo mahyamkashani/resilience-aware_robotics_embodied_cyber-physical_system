@@ -1,58 +1,23 @@
 import math
 
-# PR2 constants
-MAX_WHEEL_SPEED = 4.0         # maximum velocity for the wheels [rad / s]
-WHEELS_DISTANCE = 0.4492      # distance between 2 caster wheels (the four wheels are located in square) [m]
-SUB_WHEELS_DISTANCE = 0.098   # distance between 2 sub wheels of a caster wheel [m]
-WHEEL_RADIUS = 0.08           # wheel radius
-TOLERANCE = 0.05
+from constants import (
+    Side,
+    MAX_WHEEL_SPEED,
+    WHEELS_DISTANCE,
+    SUB_WHEELS_DISTANCE,
+    WHEEL_RADIUS,
+    TOLERANCE,
+    WHEEL_NAMES,
+    ROTATION_NAMES,
+    RIGHT_ARM_NAMES,
+    LEFT_ARM_NAMES,
+    LEFT_FINGER_MOTOR,
+    RIGHT_FINGER_MOTOR,
+    LEFT_CONTACT_SENSORS,
+    RIGHT_CONTACT_SENSORS,
+)
 
-WHEEL_NAMES = [
-    "fl_caster_l_wheel_joint",
-    "fl_caster_r_wheel_joint",
-    "fr_caster_l_wheel_joint",
-    "fr_caster_r_wheel_joint",
-    "bl_caster_l_wheel_joint",
-    "bl_caster_r_wheel_joint",
-    "br_caster_l_wheel_joint",
-    "br_caster_r_wheel_joint",
-]
-
-ROTATION_NAMES = [
-    "fl_caster_rotation_joint",
-    "fr_caster_rotation_joint",
-    "bl_caster_rotation_joint",
-    "br_caster_rotation_joint",
-]
-
-RIGHT_ARM_NAMES = [
-    "r_shoulder_pan_joint",
-    "r_shoulder_lift_joint",
-    "r_upper_arm_roll_joint",
-    "r_elbow_flex_joint",
-    "r_wrist_roll_joint",
-]
-
-LEFT_ARM_NAMES = [
-    "l_shoulder_pan_joint",
-    "l_shoulder_lift_joint",
-    "l_upper_arm_roll_joint",
-    "l_elbow_flex_joint",
-    "l_wrist_roll_joint",
-]
-
-LEFT_FINGER_MOTOR = "l_finger_gripper_motor::l_finger"
-RIGHT_FINGER_MOTOR = "r_finger_gripper_motor::r_finger"
-
-#LEFT_FINGER_SENSOR = "l_finger_gripper_motor::l_finger_sensor"
-#RIGHT_FINGER_SENSOR = "r_finger_gripper_motor::r_finger_sensor"
-
-LEFT_CONTACT_SENSORS = ["l_gripper_l_finger_tip_contact_sensor", "l_gripper_r_finger_tip_contact_sensor"]
-RIGHT_CONTACT_SENSORS = ["r_gripper_l_finger_tip_contact_sensor", "r_gripper_r_finger_tip_contact_sensor"]
-
-LEFT = "left"
-RIGHT = "right"
-_gripper_max_torque = {LEFT: None, RIGHT: None}
+_gripper_max_torque = {Side.LEFT: None, Side.RIGHT: None}
 
 def almost_equal(a, b):
     return (a < b + TOLERANCE) and (a > b - TOLERANCE)
@@ -140,7 +105,7 @@ def apply_wheel_speeds(supervisor, max_wheel_speed, resilience_manager):
 # '''''''''''''''''''''''''''
 def object_grasped(supervisor, arm):
     contact_names = (
-        LEFT_CONTACT_SENSORS if arm == "left"
+        LEFT_CONTACT_SENSORS if arm == Side.LEFT
         else RIGHT_CONTACT_SENSORS
     )
 
@@ -298,7 +263,7 @@ def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resi
 
 # Set the right/left arm position (forward kinematics)
 def set_arm_position(supervisor, arm, shoulder_roll, shoulder_lift, upper_arm_roll, elbow_lift, wrist_roll, timestep, wait_on_feedback=True, speed=0.3):
-    names = LEFT_ARM_NAMES if arm == "left" else RIGHT_ARM_NAMES
+    names = LEFT_ARM_NAMES if arm == Side.LEFT else RIGHT_ARM_NAMES
     targets = [shoulder_roll, shoulder_lift, upper_arm_roll, elbow_lift, wrist_roll]
 
     for i, name in enumerate(names):
@@ -323,9 +288,9 @@ def set_arm_position(supervisor, arm, shoulder_roll, shoulder_lift, upper_arm_ro
 def set_gripper(supervisor, arm, open, torque_when_gripping, timestep, wait_on_feedback=True, speed=0.2):
     global _gripper_max_torque
 
-    side         = arm
-    motor_name   = LEFT_FINGER_MOTOR if arm == "left" else RIGHT_FINGER_MOTOR
-    contact_names = LEFT_CONTACT_SENSORS if arm == "left" else RIGHT_CONTACT_SENSORS
+    side         = Side(arm)
+    motor_name   = LEFT_FINGER_MOTOR if arm == Side.LEFT else RIGHT_FINGER_MOTOR
+    contact_names = LEFT_CONTACT_SENSORS if arm == Side.LEFT else RIGHT_CONTACT_SENSORS
 
     motor  = supervisor.getDevice(motor_name)
     sensor = motor.getPositionSensor()

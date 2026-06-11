@@ -1,14 +1,15 @@
 import math
 from components.distance_sensor import DistanceSensor
 import pr2_hardware_control as pr2
-
-AVOIDANCE_THRESHOLD = 0.50   # closeness score to start reacting  → ~1.0 m away
-STOP_THRESHOLD      = 0.75   # closeness score on BOTH sides → ~0.5 m away (emergency)
-STRAFE_DISTANCE     = 0.5           # metres to strafe sideways per avoidance step
-STEP_DISTANCE       = 0.35          # metres per forward micro-step
-GOAL_TOLERANCE      = 0.30          # metres — stop when this close to goal
-HEADING_TOLERANCE   = 0.10          # radians — skip re-orient if error is small
-NEAR_GOAL_ZONE      = 1.2           # metres — disable avoidance inside this radius around goal
+from constants import (
+    AVOIDANCE_THRESHOLD,
+    STOP_THRESHOLD,
+    STRAFE_DISTANCE,
+    STEP_DISTANCE,
+    GOAL_TOLERANCE,
+    HEADING_TOLERANCE,
+    NEAR_GOAL_ZONE,
+)
 
 
 def init_sensors(supervisor, timestep):
