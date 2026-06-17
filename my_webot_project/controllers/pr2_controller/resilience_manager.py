@@ -94,9 +94,12 @@ class ResilienceManager:
     # Delay mitigation (Help function to check_resilinece()
     # ''''''''''''''''''''''''''''''''''''''''''''''''''''
     def tick_mitigation_timer(self):
+        if not self.pending_mitigation:
+            return
         if self.mitigation_timer <= 0:
-            return 
-        
+            self.active_mitigation = self.pending_mitigation
+            self.pending_mitigation = set()
+            return
         self.mitigation_timer -= 1
         if self.mitigation_timer == 0:
             self.active_mitigation = self.pending_mitigation

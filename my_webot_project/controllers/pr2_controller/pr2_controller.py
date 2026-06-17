@@ -273,6 +273,7 @@ def run_simulation(config_path, use_ros=True):
         "degradation": degradation,
         "kappa_crit": ids.kappa_crit,
         "theta_base": RM.theta_base,
+        "theta_crit": RM.theta_crit,
         "alpha_base": RM.alpha_base,
         "psi": psi
     }

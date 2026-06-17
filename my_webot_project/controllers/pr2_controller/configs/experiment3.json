@@ -4,6 +4,9 @@
     "object": "water_bottle",
     "arm": "left"
   },
+  
+    "mitigation_delay_steps": 100,
+
 
   "thresholds": {
     "theta_crit": 0.5,
@@ -28,7 +31,7 @@
 
   "mitigation": {
     "enabled_devices": [
-      ""
+      "left_gripper"
     ]
   }
 }

@@ -13,7 +13,7 @@ class SubscriberNode(Node):
     def listener_callback(self, msg):
         attacks = []
         for item in msg.compromised_devices:
-            component, attack_type = item.split(":")
+            component, attack_type = item.split(":", 1)
             attacks.append({"component": component, "type": attack_type})
         self.active_attacks = attacks
 

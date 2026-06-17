@@ -35,7 +35,7 @@ def log_result(file_path, output):
                 #"time",
                 #"degradation",
                 "theta_base",
-                #"thera_crit",
+                "theta_crit",
                 "alpha_base",
                 #"alpha_crit",
                 "psi"
@@ -51,7 +51,7 @@ def log_result(file_path, output):
             #time,
             #degradation_percent,
             output["theta_base"],
-            #output["theta_crit"],
+            output["theta_crit"],
             output["alpha_base"],
             #output["alpha_crit"],
             output["psi"]

@@ -16,7 +16,7 @@ set -u
 cd "$(dirname "$0")"
 
 DELAY="${DELAY:-10}"     # seconds to let Webots load before starting the controller
-DELAY2="${DELAY2:-20}"   # seconds after launch before injecting the attack
+DELAY2="${DELAY2:-20}"   # seconds after launch before injecting the attack1
 
 WORLD="my_webot_project/worlds/my_project_world.wbt"
 CONTROLLER="my_webot_project/controllers/manual_run.py"
