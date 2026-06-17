@@ -38,7 +38,7 @@ ros2 run attack_pkg attack_node
 **Terminal 4: Trigger an attack:**
 ```bash
 cd ~/ros2_ws && source install/setup.bash
-ros2 topic pub --once /attack_state my_attack_interfaces/msg/AttackState \
+ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
   "{compromised_devices: ['right_wheels:STOP']}"
 ```
 
