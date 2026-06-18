@@ -21,22 +21,22 @@ import matplotlib.pyplot as plt
 from pr2_controller.disruption_degradation import monotonic_degradation
 
 # ---- experiment2.json thresholds ----------------------------------------
-THETA_CRIT = 0.95
+THETA_CRIT = 0.99
 THETA_BASE = 0.75
-ALPHA_CRIT = 0.2
+ALPHA_CRIT = 0.4
 ALPHA_BASE = 0.05
 
 # ---- psi-family parameters ----------------------------------------------
-ALPHA_CRITS = [0.1, 0.2, 0.3, 0.4]
+ALPHA_CRITS = [0.3, 0.4, 0.5, 0.6]
 N_MAX       = 5
 TASK        = "task"
 GOAL        = "goal"
 
 # ---- file paths ---------------------------------------------------------
 HERE     = Path(__file__).resolve().parent
-CSV_PATH = HERE / "framework_correctness" / "exp5_psi.csv"
-PSI_OUT  = str(HERE / "exp5_psi_monotonic.pdf")
-PHI_OUT  = str(HERE / "exp5_psi_timeline.pdf")
+CSV_PATH = HERE / "framework_correctness" / "exp6_psi.csv"
+PSI_OUT  = str(HERE / "exp6_psi_monotonic.pdf")
+PHI_OUT  = str(HERE / "exp6_psi_timeline.pdf")
 
 
 def load_psi_csv(path):
@@ -110,15 +110,15 @@ def plot_psi_timeline():
     ax.plot(times, psis, "o", color="tab:blue", ms=4, alpha=0.8, zorder=4)
 
     # band labels
-    ax.text(t_end - 0.5, (1.0 + THETA_CRIT) / 2,
+    ax.text(t_end - 0.5, (1.0 - 0.05 + THETA_CRIT) / 2,
             r"resilient  ($\gamma=1$, $\delta=1$)",
-            ha="right", va="center", color="green", fontsize=9)
-    ax.text(t_end - 0.5, (THETA_BASE + THETA_CRIT) / 2,
+            ha="right", va="center", color="green", fontsize=11)
+    ax.text(t_end - 0.6, (THETA_BASE + THETA_CRIT) / 2,
             r"tolerable degradation  ($\gamma=1$, $\delta=0$)",
-            ha="right", va="center", color="darkorange", fontsize=9)
-    ax.text(t_end - 0.5, THETA_BASE / 2,
+            ha="right", va="center", color="darkorange", fontsize=11)
+    ax.text(t_end - 0.6, THETA_BASE / 2,
             r"not tolerable  ($\gamma=0$)",
-            ha="right", va="center", color="firebrick", fontsize=9)
+            ha="right", va="center", color="firebrick", fontsize=11)
 
     ax.set_xlabel("simulation time  [s]")
     ax.set_ylabel(r"$\psi$   (performance)")
@@ -126,7 +126,7 @@ def plot_psi_timeline():
     ax.set_xlim(0, t_end + 1)
     ax.set_ylim(0, 1.05)
     ax.grid(True, alpha=0.3)
-    ax.legend(loc="upper right", fontsize=9)
+    ax.legend(loc="lower right", fontsize=9)
     fig.tight_layout()
     fig.savefig(PHI_OUT, dpi=150)
     plt.close(fig)

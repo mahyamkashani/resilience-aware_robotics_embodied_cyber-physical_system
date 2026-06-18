@@ -1,0 +1,2 @@
+detection_rate,delta,gamma,resilient,result,theta_base,theta_crit,alpha_base,psi
+1.0,1,1,RESILIENT,HALTED,0.75,0.99,0.05,1
