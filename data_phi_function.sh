@@ -18,24 +18,24 @@ set -u
 
 cd "$(dirname "$0")"
 
-DELAY="${DELAY:-5}"     # seconds to let Webots load before starting the controller
-DELAY2="${DELAY2:-10}"   # seconds after launch before injecting attack1
-DELAY3="${DELAY3:-15}"   # seconds after launch before injecting attack2
-DELAY4="${DELAY4:-20}"   # seconds after launch before injecting attack3
-DELAY5="${DELAY5:-25}"   # seconds after launch before injecting attack4
-DELAY6="${DELAY6:-28}"   # seconds after launch before injecting attack5
+DELAY="${DELAY:-5}"     # seconds to let Webots load before starting the controller, 5
+DELAY2="${DELAY2:-10}"   # seconds after launch before injecting attack1, 15
+DELAY3="${DELAY3:-15}"   # seconds after launch before injecting attack2, 30
+DELAY4="${DELAY4:-20}"   # seconds after launch before injecting attack3, 50
+DELAY5="${DELAY5:-25}"   # seconds after launch before injecting attack4, 75
+DELAY6="${DELAY6:-28}"   # seconds after launch before injecting attack5, 102
 
 WORLD="my_webot_project/worlds/my_project_world.wbt"
 CONTROLLER="my_webot_project/controllers/manual_run.py"
 
-CONFIG="${1:-configs/experiment2.json}"
+CONFIG="${1:-configs/experiment4.json}"
 ATTACK="${2:-left_gripper:GRIP_WEAK}"
 ATTACK2="${3:-left_wheels:STOP}"
 ATTACK3="${4:-right_wheels:UNDERSPEED}"
 ATTACK4="${5:-left_arm:STOP}"
 ATTACK5="${6:-right_arm:STOP}"
 
-RESULT="${2:-../results/framework_correctness/exp2.csv}"
+RESULT="${2:-../results/framework_correctness/exp4.csv}"
 
 # Build an AttackState YAML list from a comma-separated "device:type" string.
 _make_yaml() {

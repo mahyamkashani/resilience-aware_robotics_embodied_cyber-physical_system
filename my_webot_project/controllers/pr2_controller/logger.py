@@ -4,6 +4,11 @@ import os
 #FILE_PATH = "results.csv"
 
 
+def log_psi(file_path, time, psi):
+    print(f"[t={time:>3}s] psi={psi:.3f}")
+    log_event(file_path, {"time": time, "psi": round(psi, 3)})
+
+
 def log_event(file_path, row):
     file_exists = os.path.isfile(file_path)
     with open(file_path, "a", newline="") as f:

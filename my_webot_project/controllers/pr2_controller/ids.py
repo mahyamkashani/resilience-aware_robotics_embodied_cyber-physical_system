@@ -13,13 +13,13 @@ class IDS:
     def __init__(self, D):
         self.D = D
         self.S = set()
-        
+
         # Task and goal specific criticality values
         self.tau = {}
         self.epsilon = {}
         self.current_task = None
         self.current_goal = None
-        
+
         # Criticality-based device sets
         self.kappa_crit_set = set()
         self.kappa_base_set = set()
@@ -29,6 +29,10 @@ class IDS:
         self.kappa_base = 0.0
 
         self.tested_devices = set()
+
+        # Detection delay: steps before a detected attack enters S
+        self.detection_delay_steps = 100 # default 0
+        self.pending_detection = {}  # comp -> remaining steps
 
 # ------------------------------------------------------------------        
     # Probability that the IDS detects an ongoing attack
@@ -51,15 +55,28 @@ class IDS:
 
             confidence = random.random()
             if confidence >= kappa:
-                #for d in devices:
-                #print(f'Adding {comp} to S')
-                self.S.add(comp)
+                if self.detection_delay_steps <= 0:
+                    #print(f'Adding {comp} to S')
+                    self.S.add(comp)
+                elif comp not in self.pending_detection:
+                    print(f'[IDS] {comp} detected: queued, {self.detection_delay_steps} steps until S')
+                    self.pending_detection[comp] = self.detection_delay_steps
 
             self.tested_devices.add(comp)
 
 
 
+    def tick_detection_timer(self):
+        ready = [comp for comp, steps in self.pending_detection.items() if steps <= 1]
+        for comp in ready:
+            del self.pending_detection[comp]
+            self.S.add(comp)
+            print(f'[IDS] {comp} moved to S after detection delay')
+        for comp in self.pending_detection:
+            self.pending_detection[comp] -= 1
+
     # Called when RM neutralizes a component
     def clear_device(self, comp):
-            self.tested_devices.discard(comp)
-            self.S.discard(comp)
+        self.tested_devices.discard(comp)
+        self.S.discard(comp)
+        self.pending_detection.pop(comp, None)
