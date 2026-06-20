@@ -5,8 +5,9 @@ Goal
 - Set thresholds (theta_crit and theta_base)
 - Listen for attacks via ROS 2
 '''
+import os
 import rclpy
-import sys 
+import sys
 import json
 from controller import Supervisor
 
@@ -27,6 +28,11 @@ except ImportError:
 
 
 def run_simulation(config_path, use_ros=True, psi_log_path=None, delta_log_path=None):
+    # Clear stale log files so each run starts with a fresh timeline
+    for path in (psi_log_path, delta_log_path):
+        if path and os.path.isfile(path):
+            os.remove(path)
+
     # ---------------------
     # Load Config
     # ---------------------

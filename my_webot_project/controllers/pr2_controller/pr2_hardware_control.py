@@ -262,7 +262,7 @@ def robot_go_forward(supervisor, distance, timestep, resilience_check=None, resi
 
 
 # Set the right/left arm position (forward kinematics)
-def set_arm_position(supervisor, arm, shoulder_roll, shoulder_lift, upper_arm_roll, elbow_lift, wrist_roll, timestep, wait_on_feedback=True, speed=0.3):
+def set_arm_position(supervisor, arm, shoulder_roll, shoulder_lift, upper_arm_roll, elbow_lift, wrist_roll, timestep, wait_on_feedback=True, speed=0.3, resilience_manager=None):
     names = LEFT_ARM_NAMES if arm == Side.LEFT else RIGHT_ARM_NAMES
     targets = [shoulder_roll, shoulder_lift, upper_arm_roll, elbow_lift, wrist_roll]
 
@@ -277,15 +277,19 @@ def set_arm_position(supervisor, arm, shoulder_roll, shoulder_lift, upper_arm_ro
             sensor.enable(timestep)
 
         while supervisor.step(timestep) != -1:
+            if resilience_manager and resilience_manager.tick_halt_timer(
+                supervisor.getTime(), resilience_manager.start_time
+            ):
+                return "HALTED"
             if all(almost_equal(sensors[i].getValue(), targets[i]) for i in range(5)):
                 break
-    
+
     return "DONE"
 
 # Open or close the gripper.
 # If wait_on_feedback is true, the gripper is stopped either when the target is reached,
 # or either when something has been gripped
-def set_gripper(supervisor, arm, open, torque_when_gripping, timestep, wait_on_feedback=True, speed=0.2):
+def set_gripper(supervisor, arm, open, torque_when_gripping, timestep, wait_on_feedback=True, speed=0.2, resilience_manager=None):
     global _gripper_max_torque
 
     side         = Side(arm)
@@ -312,6 +316,10 @@ def set_gripper(supervisor, arm, open, torque_when_gripping, timestep, wait_on_f
         motor.setPosition(target)
         if wait_on_feedback:
             while supervisor.step(timestep) != -1:
+                if resilience_manager and resilience_manager.tick_halt_timer(
+                    supervisor.getTime(), resilience_manager.start_time
+                ):
+                    return "HALTED"
                 if almost_equal(sensor.getValue(), target):
                     break
     else:
@@ -320,7 +328,10 @@ def set_gripper(supervisor, arm, open, torque_when_gripping, timestep, wait_on_f
         motor.setPosition(target)
         if wait_on_feedback:
             while supervisor.step(timestep) != -1:
-                # Vänta tills touch sensors triggar eller target nås
+                if resilience_manager and resilience_manager.tick_halt_timer(
+                    supervisor.getTime(), resilience_manager.start_time
+                ):
+                    return "HALTED"
                 left_contact  = contacts[0].getValue()
                 right_contact = contacts[1].getValue()
                 if (left_contact > 0.0 and right_contact > 0.0) or almost_equal(sensor.getValue(), target):

@@ -20,15 +20,15 @@ ALPHA_BASE = 0.05
 PSI_FN      = exponential_degradation #monotonic_degradation
 
 # ---- psi-family parameters ----------------------------------------------
-ALPHA_CRITS = [0.2, 0.3, 0.4, 0.5]
+ALPHA_CRITS = [0.04, 0.05, 0.06, 0.08]
 N_MAX       = 5
 TASK        = "task"
 GOAL        = "goal"
 
 # ---- file paths ---------------------------------------------------------
 HERE     = Path(__file__).resolve().parent
-CSV_PATH       = HERE / "framework_correctness" / "exp8_psi.csv"
-DELTA_CSV_PATH = HERE / "framework_correctness" / "exp8_delta.csv"
+CSV_PATH       = HERE / "framework_correctness" / "exp7_psi.csv"
+DELTA_CSV_PATH = HERE / "framework_correctness" / "exp7_delta.csv"
 PSI_OUT        = str(HERE / "exp7_psi_monotonic.pdf")
 PHI_OUT        = str(HERE / "exp7_psi_timeline.pdf")
 DELTA_OUT      = str(HERE / "exp7_delta_timeline.pdf")
@@ -105,35 +105,39 @@ def plot_psi_timeline():
     fig, ax = plt.subplots(figsize=(9.5, 5.2))
 
     # threshold bands
+    # psi >= theta_crit : always tolerable (gamma=1) regardless of attack type
     ax.axhspan(THETA_CRIT, 1.0,        color="tab:green",  alpha=0.12)
+    # theta_base <= psi < theta_crit : tolerable ONLY for non-critical attacks
     ax.axhspan(THETA_BASE, THETA_CRIT, color="tab:orange", alpha=0.10)
+    # psi < theta_base  : never tolerable (gamma=0) regardless of attack type
     ax.axhspan(0.0,        THETA_BASE, color="tab:red",    alpha=0.12)
 
     # threshold lines
     ax.axhline(THETA_CRIT, color="firebrick", ls="--", lw=1.6,
-               label=rf"$\theta_{{crit}} = {THETA_CRIT}$")
+               label=rf"$\theta_{{crit}} = {THETA_CRIT}$  (critical device threshold)")
     ax.axhline(THETA_BASE, color="gray", ls=":", lw=1.2,
-               label=rf"$\theta_{{base}} = {THETA_BASE}$")
+               label=rf"$\theta_{{base}} = {THETA_BASE}$  (non-critical device threshold)")
 
     # recorded psi
     ax.step(times, psis, where="post", color="tab:blue", lw=2.0, zorder=3,
-            label=r"$\psi(t)$ — exp2")
+            label=r"$\psi(t)$")
     ax.plot(times, psis, "o", color="tab:blue", ms=4, alpha=0.8, zorder=4)
 
     # band labels
-    ax.text(t_end - 0.5, (1.0 - 0.05 + THETA_CRIT) / 2,
-            r"resilient  ($\gamma=1$, $\delta=1$)",
-            ha="right", va="center", color="green", fontsize=11)
-    ax.text(t_end - 0.6, (THETA_BASE + THETA_CRIT) / 2,
-            r"tolerable degradation  ($\gamma=1$, $\delta=0$)",
-            ha="right", va="center", color="darkorange", fontsize=11)
-    ax.text(t_end - 0.6, THETA_BASE / 2,
-            r"not tolerable  ($\gamma=0$)",
-            ha="right", va="center", color="firebrick", fontsize=11)
+    ax.text(t_end - 0.3, (1.0 + THETA_CRIT) / 2,
+            r"Tolerable  ($\gamma=1$, any attack)",
+            ha="right", va="center", color="green", fontsize=10)
+    ax.text(t_end - 0.3, (THETA_BASE + THETA_CRIT) / 2,
+            "Tolerable if non-critical attack  ($\\gamma=1$)\n"
+            "Not tolerable if critical attack  ($\\gamma=0$)",
+            ha="right", va="center", color="darkorange", fontsize=9)
+    ax.text(t_end - 0.3, THETA_BASE / 2,
+            r"Not tolerable  ($\gamma=0$, any attack)",
+            ha="right", va="center", color="firebrick", fontsize=10)
 
     ax.set_xlabel("simulation time  [s]")
     ax.set_ylabel(r"$\psi$   (performance)")
-    ax.set_title(r"$\psi(t)$ over time: exp5  (sampled 50 Hz from simulation)")
+    ax.set_title(r"$\psi(t)$ over time")
     ax.set_xlim(0, t_end + 1)
     ax.set_ylim(0, 1.05)
     ax.grid(True, alpha=0.3)
