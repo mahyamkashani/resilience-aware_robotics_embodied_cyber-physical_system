@@ -16,9 +16,9 @@ import task
 from constants import AttackType
 from attack_executor import AttackExecutor
 from component_mapping import COMPONENT_MAP, map_to_high_level
-from disruption_degradation import monotonic_degradation, exponential_degradation
+from disruption_degradation import monotonic_degradation, exponential_degradation, disruption
 from metrics import Metrics
-from logger import log_psi
+from logger import log_psi, log_delta
 
 try:
     from ros2_subscriber import SubscriberNode
@@ -26,7 +26,7 @@ except ImportError:
     SubscriberNode = None
 
 
-def run_simulation(config_path, use_ros=True, psi_log_path=None):
+def run_simulation(config_path, use_ros=True, psi_log_path=None, delta_log_path=None):
     # ---------------------
     # Load Config
     # ---------------------
@@ -196,17 +196,26 @@ def run_simulation(config_path, use_ros=True, psi_log_path=None):
         # Log transitions
         RM.log_state_changes(supervisor.getTime())
 
-        # Log psi 10 times per simulation second (0.1 s resolution)
-        if psi_log_path:
+        # Log psi and delta at 100 Hz (0.01 s resolution) to separate CSVs
+        if psi_log_path or delta_log_path:
             current_tick = round(supervisor.getTime() * 100)
             if current_tick != _last_psi_second[0]:
                 _last_psi_second[0] = current_tick
-                psi_now = RM.psi_fn(
-                    RM.S, RM.tau, RM.epsilon,
-                    RM.current_task, RM.current_goal,
-                    RM.alpha_crit, RM.alpha_base,
-                )
-                log_psi(psi_log_path, current_tick / 100.0, psi_now)
+                t = current_tick / 100.0
+                if psi_log_path:
+                    psi_now = RM.psi_fn(
+                        RM.S, RM.tau, RM.epsilon,
+                        RM.current_task, RM.current_goal,
+                        RM.alpha_crit, RM.alpha_base,
+                    )
+                    log_psi(psi_log_path, t, psi_now)
+                if delta_log_path:
+                    delta_now = disruption(
+                        RM.S, RM.tau, RM.epsilon,
+                        RM.current_task, RM.current_goal,
+                    )
+                    operation = "NORMAL" if delta_now == 1 else "DISRUPTED"
+                    log_delta(delta_log_path, t, delta_now, operation)
 
         return result
 
@@ -254,6 +263,10 @@ def run_simulation(config_path, use_ros=True, psi_log_path=None):
         )
 
     end_time = supervisor.getTime()
+
+    # Append final task result marker to delta log
+    if delta_log_path:
+        log_delta(delta_log_path, round(end_time, 2), "-", result)
     elapsed_time = end_time - RM.start_time
 
     print(f"Task result: {result}")

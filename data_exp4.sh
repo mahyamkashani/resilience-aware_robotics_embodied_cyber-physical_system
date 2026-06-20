@@ -4,11 +4,9 @@
 #   ./data_phi_function.sh [config] [attack1] [result]
 #
 # Examples:
-#   ./data_phi_function.sh                                           # defaults below
+#   ./data_phi_function.sh                                           # defaults
 #   ./data_phi_function.sh configs/experiment2.json "left_arm:STOP" # non-resilient run
 #   DELAY=8 DELAY2=15 ./data_phi_function.sh configs/experiment4.json "left_wheels:STOP"
-#
-# Each ATTACKn and DELAYn can be overridden via env var:
 #   ATTACK2="right_arm:STOP" DELAY3=30 ./data_phi_function.sh
 #
 set -u

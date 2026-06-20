@@ -23,8 +23,11 @@ def main():
     if not result_path.is_absolute():
         result_path = PR2_DIR / result_arg
 
-    psi_log_path = result_path.with_name(result_path.stem + "_psi.csv")
-    output = run_simulation(str(config_path), use_ros=True, psi_log_path=str(psi_log_path))
+    psi_log_path   = result_path.with_name(result_path.stem + "_psi.csv")
+    delta_log_path = result_path.with_name(result_path.stem + "_delta.csv")
+    output = run_simulation(str(config_path), use_ros=True,
+                            psi_log_path=str(psi_log_path),
+                            delta_log_path=str(delta_log_path))
     log_result(str(result_path), output)
 
 
