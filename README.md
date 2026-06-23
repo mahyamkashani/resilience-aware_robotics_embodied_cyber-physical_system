@@ -107,3 +107,6 @@ cd ~/my_webot_project/controllers/tests
 pytest tests.py -v
 ```
 
+## Acknoweledgement
+
+This project is modification of simulation and resilicient-aware robotics cyber-physical system developed by Gysella Imrell. Link to initial version: https://github.com/GysellaImrell/examensarbete
