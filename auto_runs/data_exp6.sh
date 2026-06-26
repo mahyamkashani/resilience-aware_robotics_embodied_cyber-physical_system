@@ -78,27 +78,27 @@ SIM_PID=$!
 ( sleep "$DELAY2"
   echo "[Wave 1 @ ${DELAY2}s]  $_yaml1  →  psi=0.6"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml1}" ) &
+    "{compromised_devices: $_yaml1}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY3"
   echo "[Wave 2 @ ${DELAY3}s]  $_yaml2  →  psi=0.6"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml2}" ) &
+    "{compromised_devices: $_yaml2}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY4"
   echo "[Wave 3 @ ${DELAY4}s]  $_yaml3  →  psi=0.6"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml3}" ) &
+    "{compromised_devices: $_yaml3}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY5"
   echo "[Wave 4 @ ${DELAY5}s]  $_yaml4  →  psi=0.6"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml4}" ) &
+    "{compromised_devices: $_yaml4}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY6"
   echo "[Wave 5 @ ${DELAY6}s]  $_yaml5  →  psi=0.2  (dual-device escalation)"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml5}" ) &
+    "{compromised_devices: $_yaml5}" > /dev/null 2>&1 ) &
 
 # --- wait for the experiment to finish, then shut Webots down ----------------
 wait "$SIM_PID"

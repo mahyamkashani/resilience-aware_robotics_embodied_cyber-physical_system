@@ -5,7 +5,7 @@ import os
 
 
 def log_psi(file_path, time, psi):
-    print(f"[t={time:>6.2f}s] psi={psi:.3f}")
+    #print(f"[t={time:>6.2f}s] psi={psi:.3f}")
     log_event(file_path, {"time": time, "psi": round(psi, 3)})
 
 

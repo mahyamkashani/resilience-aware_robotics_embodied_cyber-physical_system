@@ -66,27 +66,27 @@ SIM_PID=$!
 ( sleep "$DELAY2"
   echo "Injecting attack1: $_yaml1"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml1}" ) &
+    "{compromised_devices: $_yaml1}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY3"
   echo "Injecting attack2: $_yaml2"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml2}" ) &
+    "{compromised_devices: $_yaml2}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY4"
   echo "Injecting attack3: $_yaml3"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml3}" ) &
+    "{compromised_devices: $_yaml3}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY5"
   echo "Injecting attack4: $_yaml4"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml4}" ) &
+    "{compromised_devices: $_yaml4}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY6"
   echo "Injecting attack5: $_yaml5"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml5}" ) &
+    "{compromised_devices: $_yaml5}" > /dev/null 2>&1 ) &
 
 wait "$SIM_PID"
 echo "Experiment finished; results written to $RESULT"

@@ -75,20 +75,20 @@ SIM_PID=$!
   echo "[Wave 1 @ ${DELAY2}s]  $_yaml1"
   echo "  k=1 → psi≈0.905  (above theta_crit=0.80, tolerable)"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml1}" ) &
+    "{compromised_devices: $_yaml1}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY3"
   echo "[Wave 2 @ ${DELAY3}s]  $_yaml2"
   echo "  k=2 → psi≈0.819  (above theta_crit=0.80, tolerable)"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml2}" ) &
+    "{compromised_devices: $_yaml2}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY4"
   echo "[Wave 3 @ ${DELAY4}s]  $_yaml3"
   echo "  k=3 → psi≈0.741  (BELOW theta_crit=0.80 → gamma=0, NOT tolerable)"
   echo "  No mitigation available → system will HALT at 2×baseline (97.6 s)"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml3}" ) &
+    "{compromised_devices: $_yaml3}" > /dev/null 2>&1 ) &
 
 # --- wait for the experiment to finish, then shut Webots down ----------------
 wait "$SIM_PID"

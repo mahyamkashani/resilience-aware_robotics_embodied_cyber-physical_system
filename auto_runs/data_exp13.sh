@@ -74,20 +74,20 @@ SIM_PID=$!
   echo "[Wave 1 @ ${DELAY2}s]  $_yaml1"
   echo "  k_crit=1 → psi≈0.923  (tolerable, mitigation will neutralise)"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml1}" ) &
+    "{compromised_devices: $_yaml1}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY3"
   echo "[Wave 2 @ ${DELAY3}s]  $_yaml2"
   echo "  k_crit=2 → psi≈0.852  (tolerable, mitigation active for both wheels)"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml2}" ) &
+    "{compromised_devices: $_yaml2}" > /dev/null 2>&1 ) &
 
 ( sleep "$DELAY4"
   echo "[Wave 3 @ ${DELAY4}s]  $_yaml3"
   echo "  k_crit=3, k_base=1 → psi≈0.757  (BELOW theta_crit=0.80 → gamma=0)"
   echo "  Arms not mitigatable → system HALTED at 2×baseline (97.6 s)"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: $_yaml3}" ) &
+    "{compromised_devices: $_yaml3}" > /dev/null 2>&1 ) &
 
 # --- wait for the experiment to finish, then shut Webots down ----------------
 wait "$SIM_PID"

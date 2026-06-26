@@ -1,4 +1,9 @@
-# Implementation and Evaluation of Cyber-Physical Embodied System under Device-level Cyberattacks
+# ARCANE: Adaptive Resilience for Cyber-Attacks in Node-level Embodiments
+
+
+## Architecture
+
+![System Architecture](assets/flow_diagram.drawio.png)
 
 ## Installation
 
@@ -107,6 +112,6 @@ cd ~/my_webot_project/controllers/tests
 pytest tests.py -v
 ```
 
-## Acknowledgement
+## Acknowledgment
 
-This project is modification of simulation and resilicient-aware robotics cyber-physical system developed by Gysella Imrell. Link to initial version: https://github.com/GysellaImrell/examensarbete
+This project is automation and deployment of ros2-based simulation for resilience-aware robotics cyber-physical system developed by Gysella Imrell. Link to initial version: https://github.com/GysellaImrell/examensarbete

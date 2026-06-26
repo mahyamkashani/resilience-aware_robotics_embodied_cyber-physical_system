@@ -12,26 +12,26 @@ from pr2_controller.disruption_degradation import monotonic_degradation, exponen
 
 # ---- experiment json thresholds ----------------------------------------
 THETA_CRIT = 0.8
-THETA_BASE = 0.5
-ALPHA_CRIT = 0.08
-ALPHA_BASE = 0.04
+THETA_BASE = 0.72
+ALPHA_CRIT = 0.15
+ALPHA_BASE = 0.2
 
 # ---- psi function selection ---------------------------------------------
 PSI_FN      = monotonic_degradation #exponential_degradation #monotonic_degradation
 
 # ---- psi-family parameters ----------------------------------------------
-ALPHA_CRITS = [0.02, 0.05, 0.1, 0.15]
+ALPHA_CRITS = [0.08, 0.15, 0.2, 0.3]
 N_MAX       = 5
 TASK        = "task"
 GOAL        = "goal"
 
 # ---- file paths ---------------------------------------------------------
 HERE     = Path(__file__).resolve().parent
-CSV_PATH       = HERE / "framework_correctness" / "exp9_psi.csv"
-DELTA_CSV_PATH = HERE / "framework_correctness" / "exp9_delta.csv"
-PSI_OUT        = str(HERE / "exp9_psi_monotonic.pdf")
-PHI_OUT        = str(HERE / "exp9_psi_timeline.pdf")
-DELTA_OUT      = str(HERE / "exp9_delta_timeline.pdf")
+CSV_PATH       = HERE / "framework_correctness" / "exp21_psi.csv"
+DELTA_CSV_PATH = HERE / "framework_correctness" / "exp21_delta.csv"
+PSI_OUT        = str(HERE / "exp21_psi_monotonic.pdf")
+PHI_OUT        = str(HERE / "exp21_psi_timeline.pdf")
+DELTA_OUT      = str(HERE / "exp21_delta_timeline.pdf")
 
 
 def load_psi_csv(path):
@@ -124,7 +124,7 @@ def plot_psi_timeline():
     ax.plot(times, psis, "o", color="tab:blue", ms=4, alpha=0.8, zorder=4)
 
     # band labels
-    ax.text(t_end - 0.3, (1.0 + THETA_CRIT) / 2 - 0.05,
+    ax.text(t_end - 0.3, (1.0 + THETA_CRIT) / 2 - 0.02,
             r"Tolerable  ($\gamma=1$, any attack)",
             ha="right", va="center", color="green", fontsize=13, fontweight="bold")
     ax.text(t_end - 0.3, (THETA_BASE + THETA_CRIT) / 2,

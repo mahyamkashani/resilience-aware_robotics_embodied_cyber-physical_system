@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
-Run data_exp14.sh N times and collect all rows into exp14.csv.
-
 Usage:
-    python3 batch_run_exp14.py                # 10 runs, 20 s pause, 120 s timeout
-    python3 batch_run_exp14.py 20             # 20 runs
-    python3 batch_run_exp14.py 20 15          # 20 runs, 15 s pause
-    python3 batch_run_exp14.py 20 15 120      # 20 runs, 15 s pause, 120 s timeout
+    python3 batch_run_exp17.py                # 10 runs, 20 s pause, 120 s timeout
+    python3 batch_run_exp17.py 20             # 20 runs
+    python3 batch_run_exp17.py 20 15          # 20 runs, 15 s pause
+    python3 batch_run_exp17.py 20 15 120      # 20 runs, 15 s pause, 120 s timeout
 """
 
 import os
@@ -18,12 +16,12 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 
-SCRIPT          = HERE / "data_exp14.sh"
+SCRIPT          = HERE / "data_exp17.sh"
 DEFAULT_N       = 10
 DEFAULT_PAUSE   = 20   # seconds between runs — let Webots fully release GPU/ROS2
 DEFAULT_TIMEOUT = 120  # seconds — worst case: 10 s load + 60 s sim (3×baseline) + buffer
-DEFAULT_CONFIG  = "configs/experiment15.json"
-DEFAULT_RESULT  = "../results/framework_correctness/exp15.csv"
+DEFAULT_CONFIG  = "configs/experiment17.json"
+DEFAULT_RESULT  = "../results/framework_correctness/exp15-attackall.csv"
 
 
 def run_once(config: str, result: str, timeout: int) -> bool:

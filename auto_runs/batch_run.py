@@ -17,7 +17,7 @@ DEFAULT_N      = 10
 DEFAULT_PAUSE  = 20  
 DEFAULT_TIMEOUT = 120  
 DEFAULT_CONFIG = "configs/experiment13.json"
-DEFAULT_RESULT = "../results/framework_correctness/exp13.csv"
+DEFAULT_RESULT = "../results/framework_correctness/exp13-attackall.csv"
 
 
 def run_once(config: str, result: str, timeout: int) -> bool:

@@ -58,7 +58,7 @@ SIM_PID=$!
   echo "[Wave 1 @ ${DELAY2}s]  left_wheels:STOP  (critical, NOT mitigatable)"
   echo "  → delta drops to 0 and stays there; system halts at 2× baseline"
   ros2 topic pub --once /active_attacks my_attack_interfaces/msg/AttackState \
-    "{compromised_devices: ['left_wheels:STOP']}" ) &
+    "{compromised_devices: ['left_wheels:STOP']}" > /dev/null 2>&1 ) &
 
 # --- wait for the experiment to finish, then shut Webots down ----------------
 wait "$SIM_PID"
