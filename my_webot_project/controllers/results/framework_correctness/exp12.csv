@@ -6,3 +6,4 @@ detection_rate,delta,gamma,resilient,result,theta_base,theta_crit,alpha_base,psi
 1.0,0,0,NOT RESILIENT,HALTED,0.5,0.8,0.04,0.7261490370736909,"{left_arm,left_gripper,left_wheels,right_arm,right_gripper}"
 1.0,0,1,NOT RESILIENT,HALTED,0.5,0.8,0.04,0.8521437889662113,"{ left_arm, left_gripper, right_arm,left_arm,left_wheels}"
 1.0,0,0,NOT RESILIENT,HALTED,0.5,0.8,0.04,0.7261490370736909,"{ left_arm,left_arm,left_gripper,left_wheels,right_arm}"
+1.0,0,0,NOT RESILIENT,HALTED,0.72,0.8,0.2,0.7408182206817179,"{left_wheels,right_wheels}"

@@ -27,11 +27,11 @@ GOAL        = "goal"
 
 # ---- file paths ---------------------------------------------------------
 HERE     = Path(__file__).resolve().parent
-CSV_PATH       = HERE / "framework_correctness" / "exp21_psi.csv"
-DELTA_CSV_PATH = HERE / "framework_correctness" / "exp21_delta.csv"
-PSI_OUT        = str(HERE / "exp21_psi_monotonic.pdf")
-PHI_OUT        = str(HERE / "exp21_psi_timeline.pdf")
-DELTA_OUT      = str(HERE / "exp21_delta_timeline.pdf")
+CSV_PATH       = HERE / "framework_correctness" / "exp9_psi.csv"
+DELTA_CSV_PATH = HERE / "framework_correctness" / "exp9_delta.csv"
+PSI_OUT        = str(HERE / "exp9_psi_monotonic.pdf")
+PHI_OUT        = str(HERE / "exp9_psi_timeline.pdf")
+DELTA_OUT      = str(HERE / "exp9_delta_timeline.pdf")
 
 
 def load_psi_csv(path):

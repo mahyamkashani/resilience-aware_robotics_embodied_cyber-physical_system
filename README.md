@@ -112,6 +112,6 @@ cd ~/my_webot_project/controllers/tests
 pytest tests.py -v
 ```
 
-## Acknowledgment
+<!-- ## Acknowledgment
 
-This project is automation and deployment of ros2-based simulation for resilience-aware robotics cyber-physical system developed by Gysella Imrell. Link to initial version: https://github.com/GysellaImrell/examensarbete
+This project is automation and deployment of ros2-based simulation for resilience-aware robotics cyber-physical system developed by Gysella Imrell. Link to initial version: https://github.com/GysellaImrell/examensarbete -->

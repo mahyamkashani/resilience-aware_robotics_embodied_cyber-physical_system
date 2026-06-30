@@ -24,7 +24,7 @@
 
   "tau": {
     "left_wheels":   2,
-    "right_wheels":  1,
+    "right_wheels":  2,
     "left_arm":      0,
     "right_arm":     0,
     "left_gripper":  0,
