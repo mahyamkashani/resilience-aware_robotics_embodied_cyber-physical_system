@@ -268,6 +268,11 @@ def run_simulation(config_path, use_ros=True, psi_log_path=None, delta_log_path=
             avoid_obstacles=config.get("obstacle_avoidance", False),
         )
 
+    # A task that technically finished while the system is NOT RESILIENT
+    # doesn't count as a genuine success — downgrade it to HALTED.
+    if result == "DONE" and RM.current_resilient == "NOT RESILIENT":
+        result = "HALTED"
+
     end_time = supervisor.getTime()
 
     # Append final task result marker to delta log

@@ -2,6 +2,7 @@ from disruption_degradation import degradation, disruption, monotonic_degradatio
 from mitigation_feasability import mitigation_feasability
 from component_mapping import COMPONENT_MAP
 from logger import log_event
+from constants import ATTACK_SEVERITY
 
 class ResilienceManager:
 
@@ -176,6 +177,12 @@ class ResilienceManager:
         # Delay mitigation
         self.tick_mitigation_timer()
 
+        # Per-device severity weight
+        severity = {
+            a["component"]: ATTACK_SEVERITY.get(a["type"], 1.0)
+            for a in self.current_attacks
+        }
+
         # Evaluate disruption
         delta = disruption(self.S, self.tau, self.epsilon, self.current_task, self.current_goal)
 
@@ -185,7 +192,7 @@ class ResilienceManager:
         #     return self.set_resilient(1, 1), set()
 
         # delta = 0: now evaluate degradation
-        gamma = degradation(self.S, self.tau, self.epsilon, self.current_task, self.current_goal, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base, psi_fn=self.psi_fn)
+        gamma = degradation(self.S, self.tau, self.epsilon, self.current_task, self.current_goal, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base, psi_fn=self.psi_fn, severity=severity)
 
         if delta == 1 and gamma == 1:
             self.reset_mitigation()
@@ -197,7 +204,7 @@ class ResilienceManager:
 
             delta_eff = disruption(s_effective, self.tau, self.epsilon, self.current_task, self.current_goal)
 
-            gamma_eff = degradation(s_effective, self.tau, self.epsilon, self.current_task, self.current_goal, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base, psi_fn=self.psi_fn)
+            gamma_eff = degradation(s_effective, self.tau, self.epsilon, self.current_task, self.current_goal, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base, psi_fn=self.psi_fn, severity=severity)
 
             if delta_eff == 1 and gamma_eff == 1:
                 return self.set_resilient(1, 1), self.active_mitigation
@@ -206,7 +213,7 @@ class ResilienceManager:
 
         # Try mitigation
         if not self.pending_mitigation:
-            my = mitigation_feasability(self.S, self.tau, self.epsilon, self.current_task, self.current_goal, self.mitigatable_devices, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base, psi_fn=self.psi_fn)
+            my = mitigation_feasability(self.S, self.tau, self.epsilon, self.current_task, self.current_goal, self.mitigatable_devices, self.theta_crit, self.theta_base, self.alpha_crit, self.alpha_base, psi_fn=self.psi_fn, severity=severity)
 
             if my["feasible"] == 1:
                 self.pending_mitigation = my["neutralized"]
@@ -279,15 +286,31 @@ class ResilienceManager:
         # Degradation (loggas alltid när delta = 0 och ändras)
         if self.current_gamma != self.prev_gamma:
             if self.current_gamma == 0:
-                self.psi = self.psi_fn(
-                    self.S,
-                    self.tau,
-                    self.epsilon,
-                    self.current_task,
-                    self.current_goal,
-                    self.alpha_crit,
-                    self.alpha_base
-                )
+                severity = {
+                    a["component"]: ATTACK_SEVERITY.get(a["type"], 1.0)
+                    for a in self.current_attacks
+                }
+                if self.psi_fn is exponential_degradation:
+                    self.psi = self.psi_fn(
+                        self.S,
+                        self.tau,
+                        self.epsilon,
+                        self.current_task,
+                        self.current_goal,
+                        self.alpha_crit,
+                        self.alpha_base,
+                        severity=severity
+                    )
+                else:
+                    self.psi = self.psi_fn(
+                        self.S,
+                        self.tau,
+                        self.epsilon,
+                        self.current_task,
+                        self.current_goal,
+                        self.alpha_crit,
+                        self.alpha_base
+                    )
                 print(f"[RM] System degraded beyond tolerance: ψ={self.psi:.1f} < θ={self.theta_crit:.1f} → γ = {self.current_gamma}")
             else:
                 print("[RM] Degradation within tolerance → γ = 1")
@@ -327,11 +350,23 @@ class ResilienceManager:
     # ''''''''''''''''''''''''''''''''''''''''
     def _log_event_row(self, current_time):
         self.step += 1
-        psi = self.psi_fn(
-            self.S, self.tau, self.epsilon,
-            self.current_task, self.current_goal,
-            self.alpha_crit, self.alpha_base,
-        )
+        severity = {
+            a["component"]: ATTACK_SEVERITY.get(a["type"], 1.0)
+            for a in self.current_attacks
+        }
+        if self.psi_fn is exponential_degradation:
+            psi = self.psi_fn(
+                self.S, self.tau, self.epsilon,
+                self.current_task, self.current_goal,
+                self.alpha_crit, self.alpha_base,
+                severity=severity,
+            )
+        else:
+            psi = self.psi_fn(
+                self.S, self.tau, self.epsilon,
+                self.current_task, self.current_goal,
+                self.alpha_crit, self.alpha_base,
+            )
 
         def fmt_set(s):
             return "{" + ",".join(sorted(s)) + "}"

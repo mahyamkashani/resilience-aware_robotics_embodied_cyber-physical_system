@@ -28,7 +28,8 @@ def monotonic_degradation(S, tau, epsilon, current_task, current_goal, alpha_cri
     #print(f'Psi value {max(value,0)}')
     return max(value, 0)
 
-def exponential_degradation(S, tau, epsilon, current_task, current_goal, alpha_crit, alpha_base):
+def exponential_degradation(S, tau, epsilon, current_task, current_goal, alpha_crit, alpha_base, severity=None):
+    severity = severity or {}
     k_crit = 0
     k_base = 0
     for d in S:
@@ -36,10 +37,11 @@ def exponential_degradation(S, tau, epsilon, current_task, current_goal, alpha_c
             tau.get((d, current_task), 0),
             epsilon.get((d, current_goal), 0)
         )
+        w = severity.get(d, 1.0)
         if level == 2:
-            k_crit += 1
+            k_crit += w
         elif level == 1:
-            k_base += 1
+            k_base += w
 
     # Criterion 1 (crit device, level=2): steep exponential decay
     psi_crit = math.exp(-alpha_crit * k_crit)
@@ -54,11 +56,14 @@ def exponential_degradation(S, tau, epsilon, current_task, current_goal, alpha_c
 
 
 # Def 7: Tolerable Degradation (gamma)
-def degradation(S, tau, epsilon, current_task, current_goal, theta_crit, theta_base, alpha_crit, alpha_base, psi_fn=None):
+def degradation(S, tau, epsilon, current_task, current_goal, theta_crit, theta_base, alpha_crit, alpha_base, psi_fn=None, severity=None):
     if psi_fn is None:
         psi_fn = monotonic_degradation
 
-    psi = psi_fn(S, tau, epsilon, current_task, current_goal, alpha_crit, alpha_base)
+    if psi_fn is exponential_degradation:
+        psi = psi_fn(S, tau, epsilon, current_task, current_goal, alpha_crit, alpha_base, severity=severity)
+    else:
+        psi = psi_fn(S, tau, epsilon, current_task, current_goal, alpha_crit, alpha_base)
 
     # Check if any critical devices exist in S
     has_critical = False

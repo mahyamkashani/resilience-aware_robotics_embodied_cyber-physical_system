@@ -14,24 +14,24 @@ from pr2_controller.disruption_degradation import monotonic_degradation, exponen
 THETA_CRIT = 0.8
 THETA_BASE = 0.72
 ALPHA_CRIT = 0.15
-ALPHA_BASE = 0.2
+ALPHA_BASE = 0.04
 
 # ---- psi function selection ---------------------------------------------
-PSI_FN      = monotonic_degradation #exponential_degradation #monotonic_degradation
+PSI_FN      = exponential_degradation #exponential_degradation #monotonic_degradation
 
 # ---- psi-family parameters ----------------------------------------------
-ALPHA_CRITS = [0.08, 0.15, 0.2, 0.3]
+ALPHA_CRITS = [0.1, 0.15, 0.2, 0.3]
 N_MAX       = 5
 TASK        = "task"
 GOAL        = "goal"
 
 # ---- file paths ---------------------------------------------------------
 HERE     = Path(__file__).resolve().parent
-CSV_PATH       = HERE / "framework_correctness" / "exp9_psi.csv"
-DELTA_CSV_PATH = HERE / "framework_correctness" / "exp9_delta.csv"
-PSI_OUT        = str(HERE / "exp9_psi_monotonic.pdf")
-PHI_OUT        = str(HERE / "exp9_psi_timeline.pdf")
-DELTA_OUT      = str(HERE / "exp9_delta_timeline.pdf")
+CSV_PATH       = HERE / "framework_correctness" / "exp_4b_psi.csv"
+DELTA_CSV_PATH = HERE / "framework_correctness" / "exp_4b_delta.csv"
+PSI_OUT        = str(HERE / "exp_4b_psi_monotonic.pdf")
+PHI_OUT        = str(HERE / "exp_4b_psi_timeline.pdf")
+DELTA_OUT      = str(HERE / "exp_4b_delta_timeline.pdf")
 
 
 def load_psi_csv(path):
@@ -67,12 +67,17 @@ def psi_k(k, alpha_crit):
 
 
 def plot_psi_family():
+    LINESTYLES = ["-", "--", "-.", ":"]
+    MARKERS    = ["o", "s", "^", "D"]
+
     fig, ax = plt.subplots(figsize=(7.0, 5.2))
     ks = list(range(0, N_MAX + 1))
-    for ac in ALPHA_CRITS:
-        psis = [psi_k(k, ac) for k in ks]
+    for idx, ac in enumerate(ALPHA_CRITS):
+        psis   = [psi_k(k, ac) for k in ks]
         is_exp = abs(ac - ALPHA_CRIT) < 1e-9
-        ax.plot(ks, psis, "-o",
+        ls     = LINESTYLES[idx % len(LINESTYLES)]
+        mk     = MARKERS[idx % len(MARKERS)]
+        ax.plot(ks, psis, ls + mk,
                 lw=3.0 if is_exp else 1.6,
                 ms=8   if is_exp else 5,
                 zorder=5 if is_exp else 3,
@@ -84,8 +89,8 @@ def plot_psi_family():
                label=rf"$\theta_{{base}} = {THETA_BASE}$")
     ax.set_xlabel(r"number of critical devices  $k = |S|$", fontsize=16)
     ax.set_ylabel(r"$\psi$   (performance)", fontsize=16)
-    ax.set_title(r"$\psi = \max(0,\ 1 - k\,\alpha_{crit})$", fontsize=20)
-    #ax.set_title(r"$\psi = e^{-\alpha_{crit} k_{crit}}$", fontsize=20)
+    #ax.set_title(r"$\psi = \max(0,\ 1 - k\,\alpha_{crit})$", fontsize=20)
+    ax.set_title(r"$\psi = e^{-\alpha_{crit} k_{crit}}$", fontsize=20)
     ax.set_xticks(ks)
     ax.set_xlim(-0.15, N_MAX + 0.15)
     ax.set_ylim(0, 1.03)

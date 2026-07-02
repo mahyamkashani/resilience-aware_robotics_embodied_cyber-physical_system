@@ -18,6 +18,17 @@ class AttackType(str, Enum):
     GRIP_STRONG = "GRIP_STRONG"
 
 
+
+ATTACK_SEVERITY = {
+    AttackType.STOP: 1.0,
+    AttackType.OVERSPEED: 1.0, #0.6,
+    AttackType.UNDERSPEED: 1.0, #0.4,
+    AttackType.BACKWARD: 1.0, #0.6,
+    AttackType.GRIP_WEAK: 1.0, #0.5,
+    AttackType.GRIP_STRONG: 1.0, #0.5,
+}
+
+
 # ----------------------------------------------------------------------
 # Manual-run defaults
 # ----------------------------------------------------------------------

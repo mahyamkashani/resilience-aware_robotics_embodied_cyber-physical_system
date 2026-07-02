@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
-Sample-size / confidence-interval analyser for experiment result CSVs.
-
 Usage:
-    python3 sample_size.py exp13.csv
     python3 sample_size.py exp13.csv --confidence 0.99 --margin 0.05
 """
 
@@ -14,10 +11,7 @@ import csv
 from pathlib import Path
 
 
-# t critical values for two-tailed 95% and 99% CI (df → t)
-# For df >= 30 the t-table converges to z (1.96 / 2.576).
 def t_critical(df: int, confidence: float) -> float:
-    # Use scipy if available, otherwise fall back to a z approximation.
     try:
         from scipy.stats import t
         alpha = 1 - confidence

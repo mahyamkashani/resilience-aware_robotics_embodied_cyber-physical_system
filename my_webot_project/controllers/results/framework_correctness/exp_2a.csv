@@ -1,0 +1,3 @@
+detection_rate,delta,gamma,resilient,result,theta_base,theta_crit,alpha_base,psi,devices
+1.0,1,1,RESILIENT,DONE,0.72,0.8,0.2,0.8187307530779818,"{left_arm,right_arm}"
+1.0,1,0,NOT RESILIENT,DONE,0.72,0.8,0.2,0.6703200460356393,"{left_arm,right_arm}"

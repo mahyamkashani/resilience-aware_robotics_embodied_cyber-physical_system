@@ -1,0 +1,41 @@
+{
+  "task": {
+    "type": "navigate_to_goal",
+    "goal": "box2"
+  },
+
+  "baseline_time": 20,
+
+  "obstacle_avoidance": false,
+
+  "degradation_mode": "exponential",
+
+  "detection_delay_steps": 50,
+  "mitigation_delay_steps": 150,
+
+  "thresholds": {
+    "theta_crit": 0.8,
+    "theta_base": 0.72,
+    "alpha_crit": 0.15,
+    "alpha_base": 0.20,
+    "kappa_crit": 0.0,
+    "kappa_base": 0.0
+  },
+
+  "tau": {
+    "left_wheels":   2,
+    "right_wheels":  0,
+    "left_arm":      1,
+    "right_arm":     0,
+    "left_gripper":  0,
+    "right_gripper": 0
+  },
+
+  "epsilon": {
+    "distance_sensor": 0
+  },
+
+  "mitigation": {
+    "enabled_devices": ["left_wheels", "left_arm"]
+  }
+}

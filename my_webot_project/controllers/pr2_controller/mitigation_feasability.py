@@ -10,11 +10,11 @@ def powerset(S):
 
 # If mitigation is possible: return 1
 # Otherwise: return 0
-def mitigation_feasability(S, tau, epsilon, current_task, current_goal, mitigatable_devices, theta_crit, theta_base, alpha_crit, alpha_base, psi_fn=None):
+def mitigation_feasability(S, tau, epsilon, current_task, current_goal, mitigatable_devices, theta_crit, theta_base, alpha_crit, alpha_base, psi_fn=None, severity=None):
 
     # If system is resilient - no mitigation needed
     if disruption(S, tau, epsilon, current_task, current_goal) == 1 \
-    and degradation(S, tau, epsilon, current_task, current_goal, theta_crit, theta_base, alpha_crit, alpha_base, psi_fn=psi_fn) == 1:
+    and degradation(S, tau, epsilon, current_task, current_goal, theta_crit, theta_base, alpha_crit, alpha_base, psi_fn=psi_fn, severity=severity) == 1:
         return {'feasible': 1, 'neutralized': set()}
 
     # Devices in S that can be mitigated
@@ -23,7 +23,7 @@ def mitigation_feasability(S, tau, epsilon, current_task, current_goal, mitigata
         S_prime = S - subset
 
         if disruption(S_prime, tau, epsilon, current_task, current_goal) == 1 \
-            and degradation(S_prime, tau, epsilon, current_task, current_goal, theta_crit, theta_base, alpha_crit, alpha_base, psi_fn=psi_fn) == 1:
+            and degradation(S_prime, tau, epsilon, current_task, current_goal, theta_crit, theta_base, alpha_crit, alpha_base, psi_fn=psi_fn, severity=severity) == 1:
             return {'feasible': 1, 'neutralized': subset}
 
     return {'feasible': 0, 'neutralized': set()}

@@ -72,7 +72,7 @@ class AttackExecutor:
                 motor = self.supervisor.getDevice(name)
                 if motor and hasattr(motor, 'setPosition'):
                     motor.setPosition(float('inf'))
-                    motor.setVelocity(MAX_WHEEL_SPEED * ran)
+                    motor.setVelocity(motor.getMaxVelocity() * ran)
 
         # underspeed
         elif attack_type == AttackType.UNDERSPEED:
@@ -86,7 +86,7 @@ class AttackExecutor:
                 motor = self.supervisor.getDevice(name)
                 if motor and hasattr(motor, 'setPosition'):
                     motor.setPosition(float('inf'))
-                    motor.setVelocity(MAX_WHEEL_SPEED * ran)
+                    motor.setVelocity(motor.getMaxVelocity() * ran)
 
         # Go backwards
         if attack_type == AttackType.BACKWARD:
